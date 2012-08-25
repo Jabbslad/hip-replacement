@@ -1,0 +1,155 @@
+<head>
+  <title>Hip Replacement</title>
+</head>
+
+<body>
+  <div class='container-fluid'>
+    <div class="navbar">
+      <div class="navbar-inner">
+        <a class="brand" href="#">Clanchat</a>
+        <ul class="nav pull-right">
+          <li><a href="#">{{#if currentUser}}{{> loginButtons}}{{/if}}</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="row-fluid">
+      {{>start}}
+    </div>
+  </div>
+</body>
+
+<template name="start">
+  {{#if currentUser}}
+    <div id="rooms_panel" class="span3 channels">
+      {{>rooms}}
+    </div>
+    <div id="room_panel" class="span9">
+      {{>room}}
+    </div>
+  {{else}}
+    <div class="span12">
+      <div class="modal">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h3>Please sign in</h3>
+        </div>
+        <div class="modal-body">
+          {{> loginButtons}}
+        </div>
+      </div>
+    </div>
+  {{/if}}
+</template>
+
+<template name="rooms_header">
+  <div class="span12 well well-small">
+    <div class="span10"><strong><a href="#" class="btn btn-link">Channels</a></strong></div>
+    <div class="span2">
+      <div class="btn-group pull-right">
+        <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+          <i class="icon-plus"></i>
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="dropdownMenu">
+          <li id="add_room"><a tabindex="-1" href="#">Add Room</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="rooms">
+  <div class="row-fluid">
+    {{>rooms_header}}
+    <ul class="nav nav-pills nav-stacked">
+      {{#each rooms}}
+        {{>room_item}}
+      {{/each}}
+    </ul>
+  </div>  
+</template>
+
+<template name="room_item">
+  <li class="{{#if is_current}}active{{/if}} room_item">
+    <a href="#">{{name}} <span class="label label-warning">{{count}}</span></a>
+  </li>
+</template>
+
+<template name="room">
+  {{#if current_room}}
+    <div class="room_container span12">
+      <div class="row-fluid">
+        <div class="span12 well well-small">
+          <div class="span10"><strong><a href="#" class="btn btn-link">{{current_room.name}}</a></strong></div>
+          <div class="span2">
+            <div class="btn-group pull-right">
+              <a id="member_button" class="btn" data-toggle="button" href="#">
+                <i class="icon-user"></i>
+              </a>
+              <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                <i class="icon-cog"></i>
+                <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="dropdownMenu">
+                <li id="leave_room"><a tabindex="-1" href="#">Leave Room</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row-fluid">
+        <div id="conversation" class="span12">
+          {{resize}}
+          {{#each messages}}
+          {{>message}}
+          {{/each}}
+        </div>
+        <div id="members_panel" class="span3" style="display:none">
+          <div class="span12 channels">
+            <div class="span12">
+              <ul class="nav nav-list well members">
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row-fluid">
+      <div class="controls well span11 offset1">
+        <textarea id="message_text" class="span12 mention"/>
+      </div>
+    </div>
+    {{mentions}}
+  {{else}}
+    Please select a room!
+  {{/if}}
+  {{scroll}}
+</template>
+
+<template name="message">
+
+  {{#if show_pic}}
+  <div class="row-fluid message_info">
+    <div class="pic span1">
+      <img class="img-circle" src="{{pic}}"/> 
+    </div>
+    <div class="name span10">{{username}}</div>
+    <div class="time span1">{{format_time}}</div>
+  </div>
+  {{/if}}
+
+  <div class="row-fluid message_row">
+    <div class="span10 offset1 message_text">{{{format text}}}</div>
+    {{#unless show_pic}}
+    <div class="time span1">{{format_time}}</div>
+    {{/unless}}
+  </div>
+  {{scroll}}
+  {{update_last_poster}}
+</template>
+
+<template name="mention">
+  <span class="mention label label-info">{{mention.name}}</span>
+</template>
