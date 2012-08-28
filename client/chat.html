@@ -51,7 +51,7 @@
           <span class="caret"></span>
         </a>
         <ul class="dropdown-menu pull-right" role="menu" aria-labelledby="dropdownMenu">
-          <li id="add_room"><a tabindex="-1" href="#">Add Room</a></li>
+          <li id="join_room"><a tabindex="-1" href="#modalJoinRoom" data-toggle="modal">Join Room</a></li>
         </ul>
       </div>
     </div>
@@ -71,7 +71,7 @@
 
 <template name="room_item">
   <li class="{{#if is_current}}active{{/if}} room_item">
-    <a href="#">{{name}} <span class="label label-warning">{{count}}</span></a>
+    <a href="#">{{room_name}} <span class="label label-warning">{{count}}</span></a>
   </li>
 </template>
 
@@ -100,7 +100,6 @@
 
       <div class="row-fluid">
         <div id="conversation" class="span12">
-          {{resize}}
           {{#each messages}}
           {{>message}}
           {{/each}}
@@ -109,6 +108,9 @@
           <div class="span12 channels">
             <div class="span12">
               <ul class="nav nav-list well members">
+                {{#each participants}}
+                  <li><a href="#"><img src="img/status.png"/> {{name}}</a></li>
+                {{/each}}
               </ul>
             </div>
           </div>
@@ -125,7 +127,7 @@
   {{else}}
     Please select a room!
   {{/if}}
-  {{scroll}}
+  {{resize}}
 </template>
 
 <template name="message">
@@ -146,10 +148,30 @@
     <div class="time span1">{{format_time}}</div>
     {{/unless}}
   </div>
-  {{scroll}}
   {{update_last_poster}}
+  {{scroll}}
 </template>
 
 <template name="mention">
   <span class="mention label label-info">{{mention.name}}</span>
+</template>
+
+<template name="join_room">
+      <div class="modal" id="modalJoinRoom" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 id="myModalLabel">Join Rooms</h3>
+        </div>
+        <div class="modal-body">
+          {{#each rooms}}
+           <label class="checkbox">
+            <input type="checkbox" id="{{this._id}}" value="{{this._id}}">{{name}}
+            </label>
+          {{/each}}
+        </div>
+        <div class="modal-footer">
+          <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+          <button class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
 </template>
