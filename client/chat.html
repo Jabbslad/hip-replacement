@@ -66,6 +66,9 @@
         {{>room_item}}
       {{/each}}
     </ul>
+    {{#if webkit_button}}
+      <button class="btn btn-warning webkit_button pull-right" type="button">Enable Notifications</button>
+    {{/if}}
   </div>  
 </template>
 
@@ -101,7 +104,7 @@
       <div class="row-fluid">
         <div id="conversation" class="span12">
           {{#each messages}}
-          {{>message}}
+            {{>message}}
           {{/each}}
         </div>
         <div id="members_panel" class="span3" style="display:none">

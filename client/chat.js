@@ -1,5 +1,40 @@
 // Client-side JavaScript, bundled and sent to client.
 
+Messages = new Meteor.Collection('messages');
+SomeMessages = new Meteor.Collection('some_messages');
+
+Meteor.autosubscribe(function() {
+  Meteor.subscribe('messages');
+});
+
+Meteor.autosubscribe(function() {
+  Meteor.subscribe('some_messages', Session.get('current_room'));
+});
+
+Meteor.autosubscribe(function() {
+  Messages.find().observe({
+    added: function(message) {
+      if(CLAN_CHAT.notifications)
+        notify(message);
+    }
+  });
+})
+
+Rooms = new Meteor.Collection('rooms');
+Meteor.autosubscribe(function() {
+  Meteor.subscribe('rooms');
+});
+
+Participants = new Meteor.Collection('participants');
+Meteor.autosubscribe(function() {
+  Meteor.subscribe('participants');
+});
+
+Meteor.autosubscribe(function() {
+  Meteor.subscribe('users');
+});
+
+
 /////////////////// Session Objects //////////////
 Session.set('current_room', null);
 
@@ -8,6 +43,7 @@ var CLAN_CHAT = {};
 CLAN_CHAT.last_message_poster = null;
 CLAN_CHAT.cache = {}
 CLAN_CHAT.cache.user = {};
+CLAN_CHAT.notifications = false;
 
 Meteor.users.find().observe({
   added: function(user) {
@@ -20,7 +56,8 @@ Meteor.users.find().observe({
 var add_message = function(data, mntns) {
   var msg = $('textarea#message_text').val().trim();
   if(msg!=="") {
-    Meteor.call('add_message', {room: Session.get('current_room'), user: Meteor.user()._id, text: msg, mentions: _.map(mntns, function(mntn) {return ({'id': mntn.id, 'name': mntn.name})}), time: new Date()});   
+    Messages.insert({room: Session.get('current_room'), user: Meteor.user()._id, text: msg, mentions: _.map(mntns, function(mntn) {return ({'id': mntn.id, 'name': mntn.name})}), time: new Date()});
+    //Meteor.call('add_message', );   
     mentions.mentionsInput('reset');
     $('textarea#message_text').focus();
   }
@@ -39,12 +76,37 @@ function resizeFrame() {
     Template.room.scroll();
 }
 
+function notify(message) {
+  console.log(Meteor.users.find(message.user).name)
+  if(window.webkitNotifications.checkPermission()===0) {
+    window.webkitNotifications.createNotification(
+         null, 
+         CLAN_CHAT.cache.user[message.user],
+         message.text).show();
+  } else {
+    window.webkitNotifications.requestPermission();
+  }
+}
+
+function profile_pic(user) {
+  var pic;
+  console.log(user)
+  if(user.emails[0] && user.emails[0].email) {
+    pic = 'http://s.gravatar.com/avatar/' + CryptoJS.MD5(user.emails[0].email) + '?s=32'
+  }
+  return pic;
+}
+
 ///////////////// Templates /////////////////////////
 
 ///////////////// Rooms //////////////////////////
 Template.rooms.rooms = function() {
   return Participants.find({});
 };
+
+Template.rooms.webkit_button = function() {
+  return window.webkitNotifications && window.webkitNotifications.checkPermission()!==0;
+}
 
 Template.rooms.events = {
   'click li#join_room': function() {
@@ -53,6 +115,9 @@ Template.rooms.events = {
       return Template.join_room();
     });
     $('#room_panel').append(fragment);
+  },
+  'click .webkit_button': function() {
+    window.webkitNotifications.requestPermission();
   }
 }
 
@@ -73,24 +138,26 @@ Template.join_room.events = {
 
 ///////////////// Room //////////////////////////
 Template.room.current_room = function () {
-  var room = Participants.findOne({room_id: Session.get('current_room')});
+  var room = Rooms.findOne({_id: Session.get('current_room')});
   return room;
 };
 
 Template.room.messages = function() {
-  var messages = Messages.find({room: Session.get('current_room')}).fetch();
-  var start = (messages.length - 50) < 0 ? 0 : (messages.length - 50);
-  return messages.slice(start, messages.length);
+  console.log()
+  var messages = SomeMessages.find({room: Session.get('current_room')});
+  return messages;
 }
 
 Template.room.scroll = function() {
   Meteor.defer(function() {
     scroll();
+    $('textarea').focus();
   });
 }
 
 Template.room.participants = function() {
   var participants = Participants.findOne({room_id: Session.get('current_room')});
+
   return Meteor.users.find({_id: {$in: participants.members}});
 }
 
@@ -102,7 +169,7 @@ Template.room.mentions = function() {
           var data = [];
 
           Meteor.users.find().forEach(function(user) {
-            data.push({id: user._id, name: user.name, avatar: user.pic, type: 'contact'}); 
+            data.push({id: user._id, name: user.name, avatar: profile_pic(user), type: 'contact'}); 
           });
 
           data = _.filter(data, function(item) { return item.name.toLowerCase().indexOf(query.toLowerCase()) > -1 });
@@ -114,7 +181,6 @@ Template.room.mentions = function() {
 
 Template.room.resize = function() {
   Meteor.defer(function() {
-    Meteor.flush();
     resizeFrame(); 
   });
 }
@@ -132,8 +198,14 @@ Template.room.events = {
       return false;
     }
   },
+  'blur textarea':function() {
+    CLAN_CHAT.notifications = true;
+  },
+  'focus textarea':function() {
+    CLAN_CHAT.notifications = false;
+  },
   'click #leave_room': function() {
-    Session.set('current_room', null); 
+    Session.set('current_room', null);
   },
   'click #member_button': function() {
     var conversation = $('#conversation')
@@ -200,12 +272,21 @@ Template.message.show_pic = function() {
 
 Template.message.format = function(message) {
     var mentions = this.mentions;
-    var html = linkify(_.escape(message.trim()));
+    var html = linkify(message.trim());
     _.each(mentions, function(mention) {
       html = html.replace(mention.name, Template.mention({mention: mention}));
     });
     html = html.replace(/\(troll\)/g, '<img src="img/troll.png"/>');
     html = html.replace(/\(tea\)/g, '<img src="img/tea.png"/>');
+    html = html.replace(/\(foreveralone\)/g, '<img src="img/foreveralone.png"/>');
+    html = html.replace(/\(chucknorris\)/g, '<img src="img/chucknorris.png"/>');
+    html = html.replace(/\(poo\)/g, '<img src="img/poo.png"/>');
+
+    html = html.replace(/\(lol\)/g, '<img src="img/lol.png"/>');
+    html = html.replace(/\(megusta\)/g, '<img src="img/megusta.png"/>');
+    html = html.replace(/\(wtf\)/g, '<img src="img/wtf.png"/>');
+    html = html.replace(/:\)/g, '<img src="img/smile.png"/>');
+    html = html.replace(/:\(/g, '<img src="img/sad.png"/>');
     return html;
 }
 
@@ -215,7 +296,7 @@ Template.message.username = function() {
 
 Template.message.pic = function() {
     var user = Meteor.users.findOne(this.user)
-    return user.pic;
+    return profile_pic(user);
 }
 
 Template.message.scroll = function() {

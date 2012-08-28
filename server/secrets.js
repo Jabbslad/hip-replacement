@@ -1,1 +1,1 @@
-Meteor.accounts.google.setSecret('SECRET');
+Meteor.accounts.google.setSecret('-kCyL_YEE_JYsOn2YjMJ25-Z');
