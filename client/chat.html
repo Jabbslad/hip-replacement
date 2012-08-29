@@ -155,7 +155,7 @@
 </template>
 
 <template name="mention">
-  <span class="mention label label-info">{{mention.name}}</span>
+  <span class="mention label {{#if is_me mention}}label-warning{{else}}label-info{{/if}}">{{mention.name}}</span>
 </template>
 
 <template name="join_room">
