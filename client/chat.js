@@ -298,6 +298,13 @@ Template.message.scroll = function() {
   Template.room.scroll();
 }
 
+Template.mention.pic = function() {
+  //console.log(this.mention.id)
+  var user = Meteor.users.findOne(this.mention.id)
+  console.log(profile_pic(user))
+  return profile_pic(user)  
+}
+
 Meteor.startup (function() {
   jQuery.event.add(window, "load", Template.room.resize);
   jQuery.event.add(window, "resize", Template.room.resize);
