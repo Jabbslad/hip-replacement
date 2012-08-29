@@ -275,6 +275,10 @@ Template.message.format = function(message) {
     html = html.replace(/\(lol\)/g, '<img src="img/lol.png"/>');
     html = html.replace(/\(megusta\)/g, '<img src="img/megusta.png"/>');
     html = html.replace(/\(wtf\)/g, '<img src="img/wtf.png"/>');
+    
+    html = html.replace(/(\(octocat\)|\(github\))/g, '<img src="img/octocat.png" width="18px" height="18px"/>');
+    html = html.replace(/\(kermit\)/g, '<img src="img/kermit.gif"/>');
+
     html = html.replace(/:\)/g, '<img src="img/smile.png"/>');
     html = html.replace(/:\(/g, '<img src="img/sad.png"/>');
     return html;
