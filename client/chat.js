@@ -1,14 +1,9 @@
 // Client-side JavaScript, bundled and sent to client.
 
 Messages = new Meteor.Collection('messages');
-SomeMessages = new Meteor.Collection('some_messages');
 
 Meteor.autosubscribe(function() {
-  Meteor.subscribe('messages');
-});
-
-Meteor.autosubscribe(function() {
-  Meteor.subscribe('some_messages', Session.get('current_room'));
+  Meteor.subscribe('messages', Session.get('current_room'));
 });
 
 Meteor.autosubscribe(function() {
@@ -37,6 +32,7 @@ Meteor.autosubscribe(function() {
 
 /////////////////// Session Objects //////////////
 Session.set('current_room', null);
+Session.set('members_panel', false);
 
 ////////////////// Namespace Object ////////////////
 var CLAN_CHAT = {};
@@ -56,18 +52,14 @@ Meteor.users.find().observe({
 var add_message = function(data, mntns) {
   var msg = $('textarea#message_text').val().trim();
   if(msg!=="") {
-    Messages.insert({room: Session.get('current_room'), user: Meteor.user()._id, text: msg, mentions: _.map(mntns, function(mntn) {return ({'id': mntn.id, 'name': mntn.name})}), time: new Date()});
-    //Meteor.call('add_message', );   
+    Messages.insert({room: Session.get('current_room'), user: Meteor.user()._id, text: msg, mentions: _.map(mntns, function(mntn) {  return ({'id': mntn.id, 'name': mntn.name})}), time: (new Date())});   
     mentions.mentionsInput('reset');
     $('textarea#message_text').focus();
   }
 }
 
 function scroll() {
-  var conversation = $("#conversation");
-    if(conversation.length) {
-      conversation.scrollTop(conversation[0].scrollHeight);
-    } 
+  $("#conversation").scrollTop(99999999); 
 }
 
 function resizeFrame() {
@@ -77,7 +69,6 @@ function resizeFrame() {
 }
 
 function notify(message) {
-  console.log(Meteor.users.find(message.user).name)
   if(window.webkitNotifications.checkPermission()===0) {
     window.webkitNotifications.createNotification(
          null, 
@@ -90,7 +81,6 @@ function notify(message) {
 
 function profile_pic(user) {
   var pic;
-  console.log(user)
   if(user.emails[0] && user.emails[0].email) {
     pic = 'http://s.gravatar.com/avatar/' + CryptoJS.MD5(user.emails[0].email) + '?s=32'
   }
@@ -143,8 +133,7 @@ Template.room.current_room = function () {
 };
 
 Template.room.messages = function() {
-  console.log()
-  var messages = SomeMessages.find({room: Session.get('current_room')});
+  var messages = Messages.find({room: Session.get('current_room')});
   return messages;
 }
 
@@ -163,6 +152,7 @@ Template.room.participants = function() {
 
 var mentions;
 Template.room.mentions = function() {
+
   Meteor.defer(function() {
     mentions = $('textarea.mention').mentionsInput({
         onDataRequest:function (mode, query, callback) {
@@ -185,13 +175,17 @@ Template.room.resize = function() {
   });
 }
 
+Template.room.members_panel = function() {
+  return Session.get('members_panel');
+}
+
 Template.room.events = {
   'keydown textarea': function(e) {
     if(e.keyCode==13 && !e.shiftKey) {
       if(!e.defaultPrevented) {
         mentions.mentionsInput('val', function(text){
-        mentions.mentionsInput('getMentions', function(mntns){
-          add_message(text, mntns);
+          mentions.mentionsInput('getMentions', function(mntns){
+            add_message(text, mntns);
           });
         });
       }
@@ -208,16 +202,12 @@ Template.room.events = {
     Session.set('current_room', null);
   },
   'click #member_button': function() {
-    var conversation = $('#conversation')
     var member_panel = $('#members_panel');
+    console.log(member_panel.is(':visible'))
     if(member_panel.is(':visible')) {
-      member_panel.hide();
-      $('#conversation').removeClass('span9');
-      $('#conversation').addClass('span12');
+      Session.set('members_panel', false);
     } else {
-      $('#conversation').removeClass('span12');
-      $('#conversation').addClass('span9');
-      member_panel.show(); 
+      Session.set('members_panel', true);
     }
   },
 }
@@ -231,7 +221,7 @@ Template.room_item.is_current = function() {
 }
 
 Template.room_item.count = function() {
-  return Messages.find({room: this.room_id}).count(); 
+  return 0; 
 }
 
 Template.room_item.room_name = function() {
@@ -251,13 +241,13 @@ Template.room_item.events = {
 ///////////////// Message ////////////////////////// 
 
 Template.message.format_time = function() {
-  var date = new Date(this.time)
+  var date = new Date();
+  if(_.isString(this.time)) {
+    date = new Date(this.time);
+  }
   var hours = date.getHours();
   var mins = date.getMinutes()
   var time = ((hours > 9) ? hours : '0' + hours) + ':' + ((mins > 9) ? mins : '0' + mins)
-  if (time === "0NaN:0NaN") {
-    return "";
-  }
   return (((hours > 9) ? hours : '0' + hours) + ':' + ((mins > 9) ? mins : '0' + mins));
 }
 
@@ -291,7 +281,8 @@ Template.message.format = function(message) {
 }
 
 Template.message.username = function() {
-    return CLAN_CHAT.cache.user[this.user];
+    var user = CLAN_CHAT.cache.user[this.user];
+    return user;
 }
 
 Template.message.pic = function() {

@@ -2,21 +2,12 @@
 
 Messages = new Meteor.Collection('messages');
 
-Meteor.publish('messages', function () {
-   	return Messages.find();
-});
-
-Meteor.publish('some_messages', function (room) {
+Meteor.publish('messages', function (room) {
 	var self = this;
 	var count = Messages.find({room: room}).count();
 	var skip  = count > 50 ? count - 50 : 0
 	var messages = Messages.find({room: room},{skip: skip})
-	messages.observe({
-		added: function(msg) {
-			self.set('some_messages', msg._id, msg);
-			self.flush();
-		}
-	})
+	return messages;
 });
 
 Rooms = new Meteor.Collection('rooms');

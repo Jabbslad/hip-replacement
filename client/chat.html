@@ -102,12 +102,12 @@
       </div>
 
       <div class="row-fluid">
-        <div id="conversation" class="span12">
+        <div id="conversation" class="{{#if members_panel}}span9{{else}}span12{{/if}}">
           {{#each messages}}
             {{>message}}
           {{/each}}
         </div>
-        <div id="members_panel" class="span3" style="display:none">
+        <div id="members_panel" class="span3" {{#unless members_panel}}style="display:none"{{/unless}}>
           <div class="span12 channels">
             <div class="span12">
               <ul class="nav nav-list well members">
@@ -134,7 +134,6 @@
 </template>
 
 <template name="message">
-
   {{#if show_pic}}
   <div class="row-fluid message_info">
     <div class="pic span1">
