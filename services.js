@@ -1,1 +1,2 @@
 Meteor.accounts.google.config('312549528803.apps.googleusercontent.com', 'http://zamchat.meteor.com');
+//Meteor.accounts.google.config('312549528803.apps.googleusercontent.com', 'http://localhost:3000');
