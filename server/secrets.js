@@ -1,1 +1,0 @@
-Meteor.accounts.google.setSecret('YOUR_GOOGLE_SECRET');
