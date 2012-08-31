@@ -272,8 +272,9 @@ Template.message.format = function(message) {
       html = html.replace(mention.name, Template.mention({mention: mention}));
     });
     Emotes.find().forEach(function(emote) {
+      //var regex = new RegExp('\\b' + emote.code + '\\b', 'g');
       var regex = new RegExp(emote.code, 'g');
-      console.log(regex)
+      //console.log(regex)
       html = html.replace(regex, emote.imgpath);
     });
     return html;
@@ -294,7 +295,6 @@ Template.message.scroll = function() {
 }
 
 Template.mention.pic = function() {
-  //console.log(this.mention.id)
   var user = Meteor.users.findOne(this.mention.id)
   console.log(profile_pic(user))
   return profile_pic(user)  
