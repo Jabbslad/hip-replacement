@@ -24,3 +24,8 @@ Meteor.publish('participants', function() {
 Meteor.publish('users', function() {
 	return Meteor.users.find();
 });
+
+Emotes = new Meteor.Collection('emotes');
+Meteor.publish('emotes', function() {
+	return Emotes.find();
+});
