@@ -1,2 +1,1 @@
-Meteor.accounts.google.config('312549528803.apps.googleusercontent.com', 'http://zamchat.meteor.com');
-//Meteor.accounts.google.config('312549528803.apps.googleusercontent.com', 'http://localhost:3000');
+Meteor.accounts.google.config('YOUR_GOOGLE_CLIENTID', 'YOUR_HTTP_SITE_ADDRESS');
