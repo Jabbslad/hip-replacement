@@ -58,7 +58,7 @@ Meteor.startup(function () {
 	Emotes.insert({code: '\\(greenbeer\\)', imgpath: '<img src="img/greenbeer.png"/>'});
 	Emotes.insert({code: '\\(gtfo\\)', imgpath: '<img src="img/gtfo.png"/>'});
 	Emotes.insert({code: ':\'D', imgpath: '<img src="img/happytear.gif"/>'});
-	Emotes.insert({code: '<3', imgpath: '<img src="img/heart.png"/>'});
+	Emotes.insert({code: '\\(<3\\)', imgpath: '<img src="img/heart.png"/>'});
 	Emotes.insert({code: '\\(hipchat\\)', imgpath: '<img src="img/hipchat.png"/>'});
 	Emotes.insert({code: '\\(hipster\\)', imgpath: '<img src="img/hipster.png"/>'});
 	Emotes.insert({code: '\\(lied\\)', imgpath: '<img src="img/ilied.png"/>'});
@@ -69,7 +69,7 @@ Meteor.startup(function () {
 	Emotes.insert({code: '\\(kermit\\)', imgpath: '<img src="img/kermit.gif"/>'});
 	Emotes.insert({code: ':x', imgpath: '<img src="img/kiss.png"/>'});
 	Emotes.insert({code: '\\(krang\\)', imgpath: '<img src="img/krang.gif"/>'});
-	Emotes.insert({code: 'lol|haha', imgpath: '<img src="img/lol.png"/>'});
+	Emotes.insert({code: '\\(lol\\)', imgpath: '<img src="img/lol.png"/>'});
 	Emotes.insert({code: '\\(lolwut\\)', imgpath: '<img src="img/lolwut.png"/>'});
 	Emotes.insert({code: '\\(megusta\\)', imgpath: '<img src="img/megusta.png"/>'});
 	Emotes.insert({code: '\\$\\)', imgpath: '<img src="img/moneymouth.png"/>'});
