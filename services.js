@@ -1,1 +1,0 @@
-Meteor.accounts.google.config('179124284469.apps.googleusercontent.com', 'http://clanchat.meteor.com');

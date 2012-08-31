@@ -29,6 +29,11 @@ Meteor.autosubscribe(function() {
   Meteor.subscribe('users');
 });
 
+Emotes = new Meteor.Collection('emotes');
+Meteor.autosubscribe(function() {
+  Meteor.subscribe('emotes');
+});
+
 
 /////////////////// Session Objects //////////////
 Session.set('current_room', null);
@@ -266,21 +271,10 @@ Template.message.format = function(message) {
     _.each(mentions, function(mention) {
       html = html.replace(mention.name, Template.mention({mention: mention}));
     });
-    html = html.replace(/\(troll\)/g, '<img src="img/troll.png"/>');
-    html = html.replace(/\(tea\)/g, '<img src="img/tea.png"/>');
-    html = html.replace(/\(foreveralone\)/g, '<img src="img/foreveralone.png"/>');
-    html = html.replace(/\(chucknorris\)/g, '<img src="img/chucknorris.png"/>');
-    html = html.replace(/\(poo\)/g, '<img src="img/poo.png"/>');
-
-    html = html.replace(/\(lol\)/g, '<img src="img/lol.png"/>');
-    html = html.replace(/\(megusta\)/g, '<img src="img/megusta.png"/>');
-    html = html.replace(/\(wtf\)/g, '<img src="img/wtf.png"/>');
-    
-    html = html.replace(/(\(octocat\)|\(github\))/g, '<img src="img/octocat.png" width="18px" height="18px"/>');
-    html = html.replace(/\(kermit\)/g, '<img src="img/kermit.gif"/>');
-
-    html = html.replace(/:\)/g, '<img src="img/smile.png"/>');
-    html = html.replace(/:\(/g, '<img src="img/sad.png"/>');
+    Emotes.find().forEach(function(emote) {
+      var regex = new RegExp('\\B' + emote.code + '\\B', 'g');
+      html = html.replace(regex, emote.imgpath);
+    });
     return html;
 }
 
@@ -299,7 +293,6 @@ Template.message.scroll = function() {
 }
 
 Template.mention.pic = function() {
-  //console.log(this.mention.id)
   var user = Meteor.users.findOne(this.mention.id)
   console.log(profile_pic(user))
   return profile_pic(user)  
