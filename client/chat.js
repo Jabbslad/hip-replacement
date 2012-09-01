@@ -38,6 +38,7 @@ Meteor.autosubscribe(function() {
 /////////////////// Session Objects //////////////
 Session.set('current_room', null);
 Session.set('members_panel', false);
+Session.set('auto_scroll', true);
 
 ////////////////// Namespace Object ////////////////
 var CLAN_CHAT = {};
@@ -69,7 +70,7 @@ function scroll() {
 
 function resizeFrame() {
     var h = $(window).height();
-    $("#conversation").css('height', (h - 300));
+    $("#conversation").css('height', (h - 300));  
     Template.room.scroll();
 }
 
@@ -184,6 +185,10 @@ Template.room.members_panel = function() {
   return Session.get('members_panel');
 }
 
+Template.room.auto_scroll = function() {
+  return Session.get('auto_scroll');
+}
+
 Template.room.events = {
   'keydown textarea': function(e) {
     if(e.keyCode==13 && !e.shiftKey) {
@@ -205,6 +210,9 @@ Template.room.events = {
   },
   'click #leave_room': function() {
     Session.set('current_room', null);
+  },
+  'click #scroll_toggle': function() {
+    Session.set('auto_scroll', (!Session.get('auto_scroll')));
   },
   'click #member_button': function() {
     var member_panel = $('#members_panel');
@@ -289,7 +297,9 @@ Template.message.pic = function() {
 }
 
 Template.message.scroll = function() {
-  Template.room.scroll();
+  if(Session.get('auto_scroll')) {
+    Template.room.scroll();
+  }
 }
 
 Template.mention.pic = function() {
