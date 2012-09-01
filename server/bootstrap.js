@@ -48,7 +48,7 @@ Meteor.startup(function () {
 	Emotes.insert({code: '\\(:Q\\)', filename: 'footinmouth.png'});
 	Emotes.insert({code: '\\(alone\\)', filename: 'foreveralone.png'});
 	Emotes.insert({code: '\\(freddie\\)', filename: 'freddie.png'});
-	Emotes.insert({code: '>:\\(', filename: 'frown.png'});
+	Emotes.insert({code: '\\]:\\(', filename: 'frown.png'});
 	Emotes.insert({code: '\\(fry\\)', filename: 'fry.png'});
 	Emotes.insert({code: '\\(fuckyeah\\)', filename: 'fuckyeah.png'});
 	Emotes.insert({code: ':O', filename: 'gasp.png'});
