@@ -272,8 +272,8 @@ Template.message.format = function(message) {
       html = html.replace(mention.name, Template.mention({mention: mention}));
     });
     Emotes.find().forEach(function(emote) {
-      var regex = new RegExp('((^|\\s)+)(' + emote.code + ')((\\s|$)+)', 'g');
-      html = html.replace(regex, '$1<img src="img/' + emote.filename + '"/>$4');
+      var regex = new RegExp(emote.code, 'g');
+      html = html.replace(regex, '<img src="img/' + emote.filename + '"/>');
     });
     return html;
 }
