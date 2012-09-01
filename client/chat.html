@@ -86,13 +86,15 @@
           <div class="span10"><strong><a href="#" class="btn btn-link">{{current_room.name}}</a></strong></div>
           <div class="span2">
             <div class="btn-group pull-right">
-              <a id="scroll_toggle" class="btn" data-toggle="button" href="#" style="width: 120px;">
-                {{#if auto_scroll}}
-                  Disable Auto Scroll 
-                {{else}}
-                  Enable Auto Scroll
-                {{/if}}
-              </a>
+              {{#if auto_scroll}}
+                <a id="scroll_toggle" class="btn btn-inverse" data-toggle="button" href="#">
+                  <i class="icon-refresh icon-white"></i>
+                </a>   
+              {{else}}
+                <a id="scroll_toggle" class="btn" data-toggle="button" href="#">
+                  <i class="icon-refresh"></i>
+                </a>
+              {{/if}}
               <a id="member_button" class="btn" data-toggle="button" href="#">
                 <i class="icon-user"></i>
               </a>
