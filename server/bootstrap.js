@@ -1,4 +1,10 @@
 Meteor.startup(function () {
+	Meteor.users.allow({
+	    update: function (userId, docs, fields, modifier) {  
+			return true;  
+		}  
+	});
+
 	if(Rooms.find().count()===0) {
 	  Rooms.insert({name: 'My Company'});
 	  Rooms.insert({name: 'Chit chat'});
