@@ -9,8 +9,11 @@ Meteor.autosubscribe(function() {
 Meteor.autosubscribe(function() {
   Messages.find().observe({
     added: function(message) {
-      if(CLAN_CHAT.notifications)
+      if(CLAN_CHAT.notifications) {
         notify(message);
+        CLAN_CHAT.unseen = CLAN_CHAT.unseen + 1;
+        Tinycon.setBubble(CLAN_CHAT.unseen);
+      }
     }
   });
 })
@@ -37,7 +40,6 @@ Meteor.autosubscribe(function() {
 
 /////////////////// Session Objects //////////////
 Session.set('current_room', null);
-Session.set('members_panel', false);
 Session.set('auto_scroll', true);
 
 ////////////////// Namespace Object ////////////////
@@ -46,10 +48,12 @@ CLAN_CHAT.last_message_poster = null;
 CLAN_CHAT.cache = {}
 CLAN_CHAT.cache.user = {};
 CLAN_CHAT.notifications = false;
+CLAN_CHAT.unseen = 0;
 
 Meteor.users.find().observe({
   added: function(user) {
-    CLAN_CHAT.cache.user[user._id] = user.name;  
+    CLAN_CHAT.cache.user[user._id] = user.name;
+    Meteor.users.update({_id:user._id}, {$set:{member_panel: true}})  
   }
 });
 
@@ -152,7 +156,6 @@ Template.room.scroll = function() {
 
 Template.room.participants = function() {
   var participants = Participants.findOne({room_id: Session.get('current_room')});
-
   return Meteor.users.find({_id: {$in: participants.members}});
 }
 
@@ -182,7 +185,11 @@ Template.room.resize = function() {
 }
 
 Template.room.members_panel = function() {
-  return Session.get('members_panel');
+  if(Meteor.users.findOne(Meteor.user()._id).member_panel) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 Template.room.auto_scroll = function() {
@@ -207,6 +214,8 @@ Template.room.events = {
   },
   'focus textarea':function() {
     CLAN_CHAT.notifications = false;
+    Tinycon.setBubble(0);
+    CLAN_CHAT.unseen = 0;
   },
   'click #leave_room': function() {
     Session.set('current_room', null);
@@ -216,11 +225,10 @@ Template.room.events = {
   },
   'click #member_button': function() {
     var member_panel = $('#members_panel');
-    console.log(member_panel.is(':visible'))
     if(member_panel.is(':visible')) {
-      Session.set('members_panel', false);
+      Meteor.users.update({_id:Meteor.user()._id}, {$set:{member_panel: false}})
     } else {
-      Session.set('members_panel', true);
+      Meteor.users.update({_id:Meteor.user()._id}, {$set:{member_panel: true}})
     }
   },
 }
@@ -311,4 +319,13 @@ Template.mention.pic = function() {
 Meteor.startup (function() {
   jQuery.event.add(window, "load", Template.room.resize);
   jQuery.event.add(window, "resize", Template.room.resize);
+
+  Tinycon.setOptions({
+    width: 7,
+    height: 9,
+    font: '9px arial',
+    colour: '#ffffff',
+    background: '#FF0000',
+    fallback: true
+  });
 });
