@@ -111,7 +111,7 @@ Template.rooms.webkit_button = function() {
 Template.rooms.events = {
   'click li#join_room': function() {
     $('#modalJoinRoom').remove();
-    var fragment = Meteor.ui.render(function () { 
+    var fragment = Meteor.render(function () { 
       return Template.join_room();
     });
     $('#room_panel').append(fragment);
@@ -289,7 +289,7 @@ Template.message.format = function(message) {
     });
     Emotes.find().forEach(function(emote) {
       var regex = new RegExp(emote.code, 'g');
-      html = html.replace(regex, '<img src="img/' + emote.filename + '"/>');
+      //html = html.replace(regex, '<img src="img/' + emote.filename + '"/>');
     });
     return html;
 }
