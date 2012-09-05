@@ -149,7 +149,7 @@ Meteor.startup(function () {
     	socket.on('close', function() {
         	delete connections[socket.id];
         	_.each(_.values(connections), function(connection) {
-				connection.write(JSON.stringify({type: 'status', data: {userId: socket.user_id, online: false}}));
+				connection.write(JSON.stringify({type: 'status', data: {userId: socket.user_id, status: {online: false, seen: socket.seen}}}));
 			});
     	});
 
@@ -157,8 +157,9 @@ Meteor.startup(function () {
     		var msg = JSON.parse(data);
     		if(msg.type==='ooze') {
     			socket.user_id = msg.data
+    			socket.seen = new Date();
     			_.each(_.values(connections), function(connection) {
-					connection.write(JSON.stringify({type: 'status', data: {userId: socket.user_id, online: true}}));
+					connection.write(JSON.stringify({type: 'status', data: {userId: socket.user_id, status: {online: true, seen: socket.seen}}}));
 				});
     		} else if(msg.type==='typing') {
     			_.each(_.values(connections), function(connection) {

@@ -47,6 +47,7 @@ Meteor.users.find().observe({
 socket = new SockJS('/presence');
 socket.onmessage = function(data) {
   var msg = JSON.parse(data.data);
+  console.log(msg)
   if(msg.type==='ooze') {
     socket.send(JSON.stringify({type: msg.type, data: Meteor.user()._id}));
     Meteor.call('ooze_on', function(err, online) {
@@ -55,8 +56,8 @@ socket.onmessage = function(data) {
   } else if(msg.type==='status') {
     var online = {};
     _.extend(online,  Session.get('online'));
-    if(msg.data.online) {
-      online[msg.data.userId] = msg.data.online;
+    if(msg.data.status.online) {
+      online[msg.data.userId] = {online: msg.data.status.online, seen: msg.data.status.online};
     } else {
       delete online[msg.data.userId];
     }
@@ -195,8 +196,20 @@ Template.room.participants = function() {
 
 Template.participant.online = function() {
   var online = Session.get('online');
-  return online[this._id] === true;
+  return (online[this._id]) ? online[this._id].online : false
 }
+
+Template.participant.events({
+  'mouseenter a.participant': function(e) {
+    var online = Session.get('online');
+    var title = 'Last seen: ' + ((online[this._id]) ? moment(online[this._id].seen).fromNow() : 'n/a');
+    $(e.target).tooltip({title: title});
+    $(e.target).tooltip('show');
+  },
+  'mouseleave a.participant': function(e) {
+    $(e.target).tooltip('hide');
+  }
+});
 
 Template.participant.typing = function() {
   var online = Session.get('typing');

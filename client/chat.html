@@ -144,7 +144,7 @@
 </template>
 
 <template name="participant">
-  <li><a href="#">{{#if typing}}<i class="icon-pencil"></i>{{else}}<img src="img/{{#if online}}status.png{{else}}status_offline.png{{/if}}"/>{{/if}} {{name}}</a></li>  
+  <li><a class="participant" rel="tooltip" data-placement="left" href="#">{{#if typing}}<i class="icon-pencil"></i>{{else}}<img src="img/{{#if online}}status.png{{else}}status_offline.png{{/if}}"/>{{/if}} {{name}}</a></li>  
 </template>
 
 <template name="message">

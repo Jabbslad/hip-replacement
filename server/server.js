@@ -18,7 +18,7 @@ Meteor.methods({
 	ooze_on: function() {
 		var online = {};
 		_.each(_.values(connections), function(connection) {
-			return online[connection.user_id] = true;
+			return online[connection.user_id] = {online: true, seen: connection.seen};
 		});
 		return online;
 	}
