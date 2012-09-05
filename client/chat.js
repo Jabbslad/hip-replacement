@@ -40,7 +40,6 @@ Session.set('typing', {});
 Meteor.users.find().observe({
   added: function(user) {
     CLAN_CHAT.cache.user[user._id] = user.name;
-    Meteor.users.update({_id:user._id}, {$set:{member_panel: true}})  
   }
 });
 
@@ -136,7 +135,7 @@ function profile_pic(user) {
 
 ///////////////// Rooms //////////////////////////
 Template.rooms.rooms = function() {
-  return Participants.find({members : {$ne : []}});
+  return Participants.find({members : Meteor.user()._id});
 };
 
 Template.rooms.webkit_button = function() {
