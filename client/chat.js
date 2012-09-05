@@ -1,5 +1,4 @@
 // Client-side JavaScript, bundled and sent to client.
-
 Messages = new Meteor.Collection('messages');
 
 Meteor.autosubscribe(function() {
@@ -41,6 +40,7 @@ Meteor.autosubscribe(function() {
 /////////////////// Session Objects //////////////
 Session.set('current_room', null);
 Session.set('auto_scroll', true);
+Session.set('offset', 50);
 
 ////////////////// Namespace Object ////////////////
 var CLAN_CHAT = {};
@@ -49,6 +49,7 @@ CLAN_CHAT.cache = {}
 CLAN_CHAT.cache.user = {};
 CLAN_CHAT.notifications = false;
 CLAN_CHAT.unseen = 0;
+CLAN_CHAT.infinite = true;
 
 Meteor.users.find().observe({
   added: function(user) {
@@ -196,7 +197,11 @@ Template.room.auto_scroll = function() {
   return Session.get('auto_scroll');
 }
 
-Template.room.events = {
+Template.room.rendered = function() {
+  scroll();
+}
+
+Template.room.events({
   'keydown textarea': function(e) {
     if(e.keyCode==13 && !e.shiftKey) {
       if(!e.defaultPrevented) {
@@ -231,7 +236,26 @@ Template.room.events = {
       Meteor.users.update({_id:Meteor.user()._id}, {$set:{member_panel: true}})
     }
   },
-}
+  'scroll #conversation': function(event) {
+    if(CLAN_CHAT.infinite && $(event.target).scrollTop() < 1000) {
+      CLAN_CHAT.infinite = false;
+      var last = $('#conversation .message').last();
+      var height = last.offset().top + last.height();
+      var offset = Session.get('offset');
+      Meteor.call('more_messages', Session.get('current_room'), offset, function(error, result) {
+        if(result.length > 0) {
+          _.each(result, function(message) {
+            $('#conversation').prepend(Template.message(message));
+          });
+          Session.set('offset', offset + 50);
+          var newheight = last.offset().top + last.height();
+          $('#conversation').scrollTop((newheight - height) + 1000);
+          CLAN_CHAT.infinite = true;
+        }      
+      });  
+    }
+  }
+});
 
 ///////////////// Room Item //////////////////////////
 Template.room_item.is_current = function() {
@@ -283,7 +307,7 @@ Template.message.show_pic = function() {
 
 Template.message.format = function(message) {
     var mentions = this.mentions;
-    var html = linkify(message.trim());
+    var html = _.escape(message.trim());
     _.each(mentions, function(mention) {
       html = html.replace(mention.name, Template.mention({mention: mention}));
     });
@@ -312,7 +336,6 @@ Template.message.scroll = function() {
 
 Template.mention.pic = function() {
   var user = Meteor.users.findOne(this.mention.id)
-  console.log(profile_pic(user))
   return profile_pic(user)  
 }
 

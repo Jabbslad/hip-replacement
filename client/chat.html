@@ -144,24 +144,25 @@
 </template>
 
 <template name="message">
-  {{#if show_pic}}
-  <div class="row-fluid message_info">
-    <div class="pic span1">
-      <img class="img-circle" src="{{pic}}"/> 
+  <div class="message">
+    {{#if show_pic}}
+    <div class="row-fluid message_info">
+      <div class="pic span1">
+        <img class="img-circle" src="{{pic}}"/> 
+      </div>
+      <div class="name span10">{{username}}</div>
+      <div class="time span1">{{format_time}}</div>
     </div>
-    <div class="name span10">{{username}}</div>
-    <div class="time span1">{{format_time}}</div>
-  </div>
-  {{/if}}
+    {{/if}}
 
-  <div class="row-fluid message_row">
-    <div class="span10 offset1 message_text">{{{format text}}}</div>
-    {{#unless show_pic}}
-    <div class="time span1">{{format_time}}</div>
-    {{/unless}}
+    <div class="row-fluid message_row">
+      <div class="span10 offset1 message_text">{{{format text}}}</div>
+      {{#unless show_pic}}
+      <div class="time span1">{{format_time}}</div>
+      {{/unless}}
+    </div>
+    {{update_last_poster}}
   </div>
-  {{update_last_poster}}
-  {{scroll}}
 </template>
 
 <template name="mention">
