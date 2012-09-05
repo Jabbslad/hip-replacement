@@ -285,6 +285,12 @@ Template.room_item.events = {
 
 ///////////////// Message ////////////////////////// 
 
+Template.message.rendered = function() {
+  var element = this.find('.message_text');
+  var message = $(element);
+  message.html(linkify($(message).text()));
+}
+
 Template.message.format_time = function() {
   var date = new Date();
   if(_.isString(this.time)) {
@@ -307,7 +313,7 @@ Template.message.show_pic = function() {
 
 Template.message.format = function(message) {
     var mentions = this.mentions;
-    var html = _.escape(message.trim());
+    var html = message.trim();
     _.each(mentions, function(mention) {
       html = html.replace(mention.name, Template.mention({mention: mention}));
     });
