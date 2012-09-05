@@ -1,6 +1,14 @@
 // Client-side JavaScript, bundled and sent to client.
 Messages = new Meteor.Collection('messages');
 
+socket = new SockJS('/presence');
+socket.onmessage = function(data) {
+  var msg = JSON.parse(data.data);
+  if(msg.type==='ooze') {
+    socket.send(JSON.stringify({type: msg.type, data: Meteor.user()._id}));
+  }
+}
+
 Meteor.autosubscribe(function() {
   Meteor.subscribe('messages', Session.get('current_room'));
 });

@@ -14,5 +14,10 @@ Meteor.methods({
 			messages = Messages.find({room: room},{skip: skip, limit: limit}).fetch().reverse();	
 		}		
 		return messages;
+	},
+	ooze_on: function() {
+		return _.map(_.values(connections), function(connection) {
+			return Meteor.users.findOne({_id: connection.user_id})
+		});
 	}
 });

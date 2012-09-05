@@ -132,4 +132,29 @@ Meteor.startup(function () {
 	Emotes.insert({code: '\\(yuno\\)', filename: 'yuno.png'});
 	Emotes.insert({code: '\\(zoidberg\\)', filename: 'zoidberg.png'});
 	Emotes.insert({code: '\\(zzz\\)', filename: 'zzz.gif'});
+
+	var sockjs = __meteor_bootstrap__.require('sockjs');
+	var server = sockjs.createServer({
+    	prefix: '/presence', log: function(){},
+    	jsessionid: false
+    });
+    server.installHandlers(__meteor_bootstrap__.app);
+
+    connections = {}
+    server.on('connection', function (socket) {
+    	connections[socket.id] = socket;
+
+    	socket.write(JSON.stringify({type: 'ooze', data: 'ooze on?'}));
+
+    	socket.on('close', function() {
+        	delete connections[socket.id];
+    	});
+
+    	socket.on('data', function(data) {
+    		var msg = JSON.parse(data);
+    		if(msg.type==='ooze') {
+    			socket.user_id = msg.data
+    		}
+    	})
+    });
 });
