@@ -288,7 +288,15 @@ Template.room_item.events = {
 Template.message.rendered = function() {
   var element = this.find('.message_text');
   var message = $(element);
-  message.html(linkify($(message).text()));
+  var text = $(message).text();
+  text = linkify(text);
+
+  var mentions = this.data.mentions;
+    _.each(mentions, function(mention) {
+      text = text.replace(mention.name, Template.mention({mention: mention}));
+  });
+
+  message.html(text);
 }
 
 Template.message.format_time = function() {
@@ -312,11 +320,7 @@ Template.message.show_pic = function() {
 }
 
 Template.message.format = function(message) {
-    var mentions = this.mentions;
     var html = message.trim();
-    _.each(mentions, function(mention) {
-      html = html.replace(mention.name, Template.mention({mention: mention}));
-    });
     Emotes.find().forEach(function(emote) {
       var regex = new RegExp(emote.code, 'g');
       //html = html.replace(regex, '<img src="img/' + emote.filename + '"/>');
