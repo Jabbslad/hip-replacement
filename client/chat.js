@@ -81,7 +81,9 @@ Meteor.autosubscribe(function() {
   Messages.find().observe({
     added: function(message) {
       if(CLAN_CHAT.notifications) {
-        notify(message);
+        if(window.webkitNotifications) {
+          notify(message);
+        }
         CLAN_CHAT.unseen = CLAN_CHAT.unseen + 1;
         Tinycon.setBubble(CLAN_CHAT.unseen);
       }
@@ -347,6 +349,11 @@ Template.message.rendered = function() {
   var mentions = this.data.mentions;
     _.each(mentions, function(mention) {
       text = text.replace(mention.name, Template.mention({mention: mention}));
+  });
+
+  Emotes.find().forEach(function(emote) {
+    var regex = new RegExp(emote.code, 'g');
+    text = text.replace(regex, '<img src="img/' + emote.filename + '"/>');
   });
 
   message.html(text);

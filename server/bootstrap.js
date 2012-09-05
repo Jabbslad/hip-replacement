@@ -109,7 +109,7 @@ Meteor.startup(function () {
 	Emotes.insert({code: '\\(seomoz\\)', filename: 'seomoz.png'});
 	Emotes.insert({code: '\\(shamrock\\)', filename: 'shamrock.png'});
 	Emotes.insert({code: '\\(skyrim\\)', filename: 'skyrim.png'});
-	Emotes.insert({code: ':\\/', filename: 'slant.png'});
+	Emotes.insert({code: '\\(:\\/\\)', filename: 'slant.png'});
 	Emotes.insert({code: ':\\)', filename: 'smile.png'});
 	Emotes.insert({code: '\\(stare\\)', filename: 'stare.png'});
 	Emotes.insert({code: '\\(status\\)', filename: 'status.png'});
