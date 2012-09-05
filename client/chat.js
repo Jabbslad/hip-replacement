@@ -276,6 +276,7 @@ Template.room.events({
     CLAN_CHAT.unseen = 0;
   },
   'click #leave_room': function() {
+    Participants.update({room_id : Session.get('current_room')}, {$pull : { members : Meteor.user()._id}});
     Session.set('current_room', null);
   },
   'click #scroll_toggle': function() {
