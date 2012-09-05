@@ -133,7 +133,7 @@ function profile_pic(user) {
 
 ///////////////// Rooms //////////////////////////
 Template.rooms.rooms = function() {
-  return Participants.find({});
+  return Participants.find({members : {$ne : []}});
 };
 
 Template.rooms.webkit_button = function() {
