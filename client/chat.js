@@ -133,7 +133,7 @@ function profile_pic(user) {
 
 ///////////////// Rooms //////////////////////////
 Template.rooms.rooms = function() {
-  return Participants.find({members : {$ne : []}});
+  return Participants.find({members : Meteor.user()._id});
 };
 
 Template.rooms.webkit_button = function() {
