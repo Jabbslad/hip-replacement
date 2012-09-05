@@ -1,12 +1,18 @@
 // Client-side JavaScript, bundled and sent to client.
-Messages = new Meteor.Collection('messages');
 
+/////////////////////// Collections /////////////////////////
+
+Messages = new Meteor.Collection('messages');
 Rooms = new Meteor.Collection('rooms');
+Participants = new Meteor.Collection('participants');
+Emotes = new Meteor.Collection('emotes');
+
+/////////////////////// Subscriptions /////////////////////////
+
 Meteor.autosubscribe(function() {
   Meteor.subscribe('rooms');
 });
 
-Participants = new Meteor.Collection('participants');
 Meteor.autosubscribe(function() {
   Meteor.subscribe('participants');
 });
@@ -15,12 +21,36 @@ Meteor.autosubscribe(function() {
   Meteor.subscribe('users');
 });
 
-Emotes = new Meteor.Collection('emotes');
 Meteor.autosubscribe(function() {
   Meteor.subscribe('emotes');
 });
 
+Meteor.autosubscribe(function() {
+  Meteor.subscribe('messages', Session.get('current_room'));
+});
+
+Meteor.autosubscribe(function() {
+  Messages.find().observe({
+    added: function(message) {
+      if(CLAN_CHAT.notifications) {
+        if(window.webkitNotifications) {
+          notify(message);
+        }
+        CLAN_CHAT.unseen = ++CLAN_CHAT.unseen;
+        Tinycon.setBubble(CLAN_CHAT.unseen);
+      }
+    }
+  });
+});
+
+Meteor.users.find().observe({
+  added: function(user) {
+    CLAN_CHAT.cache.user[user._id] = user.name;
+  }
+});
+
 ////////////////// Namespace Object ////////////////
+
 var CLAN_CHAT = {};
 CLAN_CHAT.last_message_poster = null;
 CLAN_CHAT.cache = {}
@@ -36,12 +66,6 @@ Session.set('auto_scroll', true);
 Session.set('offset', 50);
 Session.set('online', {});
 Session.set('typing', {});
-
-Meteor.users.find().observe({
-  added: function(user) {
-    CLAN_CHAT.cache.user[user._id] = user.name;
-  }
-});
 
 socket = new SockJS('/presence');
 socket.onmessage = function(data) {
@@ -72,24 +96,6 @@ socket.onmessage = function(data) {
     Session.set('typing', typing);  
   }
 }
-
-Meteor.autosubscribe(function() {
-  Meteor.subscribe('messages', Session.get('current_room'));
-});
-
-Meteor.autosubscribe(function() {
-  Messages.find().observe({
-    added: function(message) {
-      if(CLAN_CHAT.notifications) {
-        if(window.webkitNotifications) {
-          notify(message);
-        }
-        CLAN_CHAT.unseen = CLAN_CHAT.unseen + 1;
-        Tinycon.setBubble(CLAN_CHAT.unseen);
-      }
-    }
-  });
-})
 
 ///////////////// Helpers /////////////////////////
 

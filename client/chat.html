@@ -44,7 +44,7 @@
 
 <template name="rooms_header">
   <div class="span12 well well-small">
-    <div class="span10"><strong><a href="#" class="btn btn-link">Channels</a></strong></div>
+    <div class="span10"><strong><a href="#" class="btn btn-link">Rooms</a></strong></div>
     <div class="span2">
       <div class="btn-group pull-right">
         <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
@@ -154,15 +154,15 @@
       <div class="pic span1">
         <img class="img-circle" src="{{pic}}"/> 
       </div>
-      <div class="name span10">{{username}}</div>
-      <div class="time span1">{{format_time}}</div>
+      <div class="name span9">{{username}}</div>
+      <div class="span2"><div class="time pull-right">{{format_time}}</div></div>
     </div>
     {{/if}}
 
     <div class="row-fluid message_row">
-      <div class="span10 offset1 message_text">{{format text}}</div>
+      <div class="span9 offset1 message_text">{{format text}}</div>
       {{#unless show_pic}}
-      <div class="time span1">{{format_time}}</div>
+      <div class="span2"><div class="time pull-right">{{format_time}}</div></div>
       {{/unless}}
     </div>
     {{update_last_poster}}

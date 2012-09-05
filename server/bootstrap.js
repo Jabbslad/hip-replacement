@@ -5,6 +5,8 @@ Meteor.startup(function () {
 		}  
 	});
 
+	Rooms.update({name: 'My Company'}, {name: 'Development'});
+
 	if(Rooms.find().count()===0) {
 	  Rooms.insert({name: 'My Company'});
 	  Rooms.insert({name: 'Chit chat'});
