@@ -160,6 +160,10 @@ Meteor.startup(function () {
     			_.each(_.values(connections), function(connection) {
 					connection.write(JSON.stringify({type: 'status', data: {userId: socket.user_id, online: true}}));
 				});
+    		} else if(msg.type==='typing') {
+    			_.each(_.values(connections), function(connection) {
+					connection.write(JSON.stringify({type: 'typing', data: {userId: socket.user_id, typing: msg.data.typing}}));
+				});
     		}
     	});
     });

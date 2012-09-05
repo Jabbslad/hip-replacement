@@ -28,12 +28,14 @@ CLAN_CHAT.cache.user = {};
 CLAN_CHAT.notifications = false;
 CLAN_CHAT.unseen = 0;
 CLAN_CHAT.infinite = true;
+CLAN_CHAT.typing = false;
 
 /////////////////// Session Objects //////////////
 Session.set('current_room', null);
 Session.set('auto_scroll', true);
 Session.set('offset', 50);
 Session.set('online', {});
+Session.set('typing', {});
 
 Meteor.users.find().observe({
   added: function(user) {
@@ -59,6 +61,15 @@ socket.onmessage = function(data) {
       delete online[msg.data.userId];
     }
     Session.set('online', online);  
+  } else if(msg.type==='typing') {
+    var typing = {};
+    _.extend(typing,  Session.get('typing'));
+    if(msg.data.typing) {
+      typing[msg.data.userId] = msg.data.typing;
+    } else {
+      delete typing[msg.data.userId];
+    }
+    Session.set('typing', typing);  
   }
 }
 
@@ -185,6 +196,11 @@ Template.participant.online = function() {
   return online[this._id] === true;
 }
 
+Template.participant.typing = function() {
+  var online = Session.get('typing');
+  return online[this._id] === true;
+}
+
 var mentions;
 Template.room.mentions = function() {
 
@@ -233,10 +249,22 @@ Template.room.events({
         mentions.mentionsInput('val', function(text){
           mentions.mentionsInput('getMentions', function(mntns){
             add_message(text, mntns);
+            CLAN_CHAT.typing = false;
+            socket.send(JSON.stringify({type: 'typing', data: {userId: Meteor.user()._id, typing: CLAN_CHAT.typing}}));
           });
         });
       }
       return false;
+    }
+  },
+  'keyup textarea': function(e) {
+    var text = $('#message_text').val();
+    if (!CLAN_CHAT.typing && text.length > 0) {
+      CLAN_CHAT.typing = true;
+      socket.send(JSON.stringify({type: 'typing', data: {userId: Meteor.user()._id, typing: CLAN_CHAT.typing}}));
+    } else if (CLAN_CHAT.typing && text.length === 0) {
+      CLAN_CHAT.typing = false;
+      socket.send(JSON.stringify({type: 'typing', data: {userId: Meteor.user()._id, typing: CLAN_CHAT.typing}}));
     }
   },
   'blur textarea':function() {
