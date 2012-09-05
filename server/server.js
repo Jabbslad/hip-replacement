@@ -16,8 +16,10 @@ Meteor.methods({
 		return messages;
 	},
 	ooze_on: function() {
-		return _.map(_.values(connections), function(connection) {
-			return Meteor.users.findOne({_id: connection.user_id})
+		var online = {};
+		_.each(_.values(connections), function(connection) {
+			return online[connection.user_id] = true;
 		});
+		return online;
 	}
 });

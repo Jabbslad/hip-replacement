@@ -45,23 +45,20 @@ Meteor.users.find().observe({
 socket = new SockJS('/presence');
 socket.onmessage = function(data) {
   var msg = JSON.parse(data.data);
-  var online = {};
-  _.extend(online,  Session.get('online'));
   if(msg.type==='ooze') {
     socket.send(JSON.stringify({type: msg.type, data: Meteor.user()._id}));
-    Meteor.call('ooze_on', function(err, on) {
-      //async callback
-      _.each(on, function(user) {
-        online[user._id] = true;  
-      });
+    Meteor.call('ooze_on', function(err, online) {
       Session.set('online', online);
     });
-  } else if(msg.type==='on') {
-    online[msg.data] = true;
-    Session.set('online', online);
-  } else if(msg.type==='off') {
-    delete online[msg.data];
-    Session.set('online', online);
+  } else if(msg.type==='status') {
+    var online = {};
+    _.extend(online,  Session.get('online'));
+    if(msg.data.online) {
+      online[msg.data.userId] = msg.data.online;
+    } else {
+      delete online[msg.data.userId];
+    }
+    Session.set('online', online);  
   }
 }
 
