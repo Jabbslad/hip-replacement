@@ -40,7 +40,6 @@ Session.set('typing', {});
 Meteor.users.find().observe({
   added: function(user) {
     CLAN_CHAT.cache.user[user._id] = user.name;
-    Meteor.users.update({_id:user._id}, {$set:{member_panel: true}})  
   }
 });
 
