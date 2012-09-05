@@ -122,7 +122,7 @@
             <div class="span12">
               <ul class="nav nav-list well members">
                 {{#each participants}}
-                  <li><a href="#"><img src="img/status.png"/> {{name}}</a></li>
+                  {{>participant}}
                 {{/each}}
               </ul>
             </div>
@@ -141,6 +141,10 @@
     Please select a room!
   {{/if}}
   {{resize}}
+</template>
+
+<template name="participant">
+  <li><a href="#"><img src="img/{{#if online}}status.png{{else}}status_offline.png{{/if}}"/> {{name}}</a></li>  
 </template>
 
 <template name="message">

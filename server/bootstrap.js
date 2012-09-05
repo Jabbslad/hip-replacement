@@ -148,13 +148,19 @@ Meteor.startup(function () {
 
     	socket.on('close', function() {
         	delete connections[socket.id];
+        	_.each(_.values(connections), function(connection) {
+				connection.write(JSON.stringify({type: 'off', data: socket.user_id}));
+			});
     	});
 
     	socket.on('data', function(data) {
     		var msg = JSON.parse(data);
     		if(msg.type==='ooze') {
     			socket.user_id = msg.data
+    			_.each(_.values(connections), function(connection) {
+					connection.write(JSON.stringify({type: 'on', data: socket.user_id}));
+				});
     		}
-    	})
+    	});
     });
 });

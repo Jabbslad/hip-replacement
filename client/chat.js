@@ -1,30 +1,6 @@
 // Client-side JavaScript, bundled and sent to client.
 Messages = new Meteor.Collection('messages');
 
-socket = new SockJS('/presence');
-socket.onmessage = function(data) {
-  var msg = JSON.parse(data.data);
-  if(msg.type==='ooze') {
-    socket.send(JSON.stringify({type: msg.type, data: Meteor.user()._id}));
-  }
-}
-
-Meteor.autosubscribe(function() {
-  Meteor.subscribe('messages', Session.get('current_room'));
-});
-
-Meteor.autosubscribe(function() {
-  Messages.find().observe({
-    added: function(message) {
-      if(CLAN_CHAT.notifications) {
-        notify(message);
-        CLAN_CHAT.unseen = CLAN_CHAT.unseen + 1;
-        Tinycon.setBubble(CLAN_CHAT.unseen);
-      }
-    }
-  });
-})
-
 Rooms = new Meteor.Collection('rooms');
 Meteor.autosubscribe(function() {
   Meteor.subscribe('rooms');
@@ -44,12 +20,6 @@ Meteor.autosubscribe(function() {
   Meteor.subscribe('emotes');
 });
 
-
-/////////////////// Session Objects //////////////
-Session.set('current_room', null);
-Session.set('auto_scroll', true);
-Session.set('offset', 50);
-
 ////////////////// Namespace Object ////////////////
 var CLAN_CHAT = {};
 CLAN_CHAT.last_message_poster = null;
@@ -59,12 +29,57 @@ CLAN_CHAT.notifications = false;
 CLAN_CHAT.unseen = 0;
 CLAN_CHAT.infinite = true;
 
+/////////////////// Session Objects //////////////
+Session.set('current_room', null);
+Session.set('auto_scroll', true);
+Session.set('offset', 50);
+Session.set('online', {});
+
 Meteor.users.find().observe({
   added: function(user) {
     CLAN_CHAT.cache.user[user._id] = user.name;
     Meteor.users.update({_id:user._id}, {$set:{member_panel: true}})  
   }
 });
+
+socket = new SockJS('/presence');
+socket.onmessage = function(data) {
+  var msg = JSON.parse(data.data);
+  var online = {};
+  _.extend(online,  Session.get('online'));
+  if(msg.type==='ooze') {
+    socket.send(JSON.stringify({type: msg.type, data: Meteor.user()._id}));
+    Meteor.call('ooze_on', function(err, on) {
+      //async callback
+      _.each(on, function(user) {
+        online[user._id] = true;  
+      });
+      Session.set('online', online);
+    });
+  } else if(msg.type==='on') {
+    online[msg.data] = true;
+    Session.set('online', online);
+  } else if(msg.type==='off') {
+    delete online[msg.data];
+    Session.set('online', online);
+  }
+}
+
+Meteor.autosubscribe(function() {
+  Meteor.subscribe('messages', Session.get('current_room'));
+});
+
+Meteor.autosubscribe(function() {
+  Messages.find().observe({
+    added: function(message) {
+      if(CLAN_CHAT.notifications) {
+        notify(message);
+        CLAN_CHAT.unseen = CLAN_CHAT.unseen + 1;
+        Tinycon.setBubble(CLAN_CHAT.unseen);
+      }
+    }
+  });
+})
 
 ///////////////// Helpers /////////////////////////
 
@@ -166,6 +181,11 @@ Template.room.scroll = function() {
 Template.room.participants = function() {
   var participants = Participants.findOne({room_id: Session.get('current_room')});
   return Meteor.users.find({_id: {$in: participants.members}});
+}
+
+Template.participant.online = function() {
+  var online = Session.get('online');
+  return online[this._id] === true;
 }
 
 var mentions;
