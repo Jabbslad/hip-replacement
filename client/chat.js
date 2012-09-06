@@ -81,8 +81,11 @@ socket.onmessage = function(data) {
     _.extend(online,  Session.get('online'));
     if(msg.data.status.online) {
       online[msg.data.userId] = {online: msg.data.status.online, seen: msg.data.status.online};
+      status_notify(Meteor.users.findOne(msg.data.userId).name + ' has come online.');
+      add_system_message(Meteor.users.findOne(msg.data.userId).name + ' has come online.');
     } else {
       delete online[msg.data.userId];
+      status_notify(Meteor.users.findOne(msg.data.userId).name + ' has gone offline.');
     }
     Session.set('online', online);  
   } else if(msg.type==='typing') {
@@ -124,6 +127,17 @@ function notify(message) {
          null, 
          CLAN_CHAT.cache.user[message.user],
          message.text).show();
+  } else {
+    window.webkitNotifications.requestPermission();
+  }
+}
+
+function status_notify(message) {
+  if(window.webkitNotifications.checkPermission()===0) {
+    window.webkitNotifications.createNotification(
+         null, 
+         'Member Notification',
+         message).show();
   } else {
     window.webkitNotifications.requestPermission();
   }
