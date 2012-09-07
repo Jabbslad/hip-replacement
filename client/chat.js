@@ -81,8 +81,10 @@ socket.onmessage = function(data) {
     _.extend(online,  Session.get('online'));
     if(msg.data.status.online) {
       online[msg.data.userId] = {online: msg.data.status.online, seen: msg.data.status.online};
+      status_notify(Meteor.users.findOne(msg.data.userId).name + ' has come online.');
     } else {
       delete online[msg.data.userId];
+      status_notify(Meteor.users.findOne(msg.data.userId).name + ' has gone offline.');
     }
     Session.set('online', online);  
   } else if(msg.type==='typing') {
@@ -109,7 +111,7 @@ var add_message = function(data, mntns) {
 }
 
 function scroll() {
-  $("#conversation").scrollTop(99999999); 
+    $("#conversation").scrollTop(99999999); 
 }
 
 function resizeFrame() {
@@ -124,6 +126,21 @@ function notify(message) {
          null, 
          CLAN_CHAT.cache.user[message.user],
          message.text).show();
+  } else {
+    window.webkitNotifications.requestPermission();
+  }
+}
+
+function status_notify(message) {
+  if(window.webkitNotifications.checkPermission()===0) {
+    var notification = window.webkitNotifications.createNotification(
+         null, 
+         'Member Notification',
+         message);
+    notification.show();
+    setTimeout(function() {
+      notification.cancel();
+    },3000);
   } else {
     window.webkitNotifications.requestPermission();
   }
@@ -394,7 +411,6 @@ Template.message.update_last_poster = function() {
 }
 
 Template.message.show_pic = function() {
-  //return CLAN_CHAT.last_message_poster!==this.user;
   return true;
 }
 
@@ -415,12 +431,6 @@ Template.message.username = function() {
 Template.message.pic = function() {
     var user = Meteor.users.findOne(this.user)
     return profile_pic(user);
-}
-
-Template.message.scroll = function() {
-  if(Session.get('auto_scroll')) {
-    Template.room.scroll();
-  }
 }
 
 Template.mention.pic = function() {
