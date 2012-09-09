@@ -181,6 +181,13 @@ Template.rooms.events = {
     });
     $('#room_panel').append(fragment);
   },
+  'click li#create_room': function() {
+    $('#modalCreateRoom').remove();
+    var fragment = Meteor.render(function () { 
+      return Template.create_room();
+    });
+    $('#room_panel').append(fragment);
+  },
   'click .webkit_button': function() {
     window.webkitNotifications.requestPermission();
   }
@@ -198,6 +205,37 @@ Template.join_room.events = {
       }
       $('#modalJoinRoom').modal('hide');
     });
+  }
+}
+
+Template.create_room.events = {
+  'click .btn-primary': function() {
+    var room_name = $('input[type="text"]').val();
+    if(room_name !== "") {
+      var existing_room = Rooms.findOne({name: room_name});
+      if(existing_room===undefined) {
+        Rooms.insert({name: room_name}, function(err, id) {
+          if (err) {
+            // XXX - Show error message to user
+            console.log(err);
+            return;
+          }
+          var join = $('input[type="checkbox"]').is(':checked');
+          if(join) {
+            Participants.insert({room_id: id, members: [Meteor.user()._id]}, function(err, id) {
+              if (err) {
+                // XXX - Show error message to user
+                console.log(err);
+                return;
+              }
+              $('#modalCreateRoom').modal('hide');
+            });
+          } else {
+            $('#modalCreateRoom').modal('hide');
+          }
+        });
+      }
+    }
   }
 }
 
