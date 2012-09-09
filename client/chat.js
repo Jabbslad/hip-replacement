@@ -62,10 +62,12 @@ CLAN_CHAT.typing = false;
 
 /////////////////// Session Objects //////////////
 Session.set('current_room', null);
-Session.set('auto_scroll', true);
 Session.set('offset', 50);
 Session.set('online', {});
 Session.set('typing', {});
+
+///////////////// Global Variables ////////////////
+var auto_scroll = true;
 
 socket = new SockJS('/presence');
 socket.onmessage = function(data) {
@@ -111,7 +113,9 @@ var add_message = function(data, mntns) {
 }
 
 function scroll() {
+  if(auto_scroll) {
     $("#conversation").scrollTop(99999999); 
+  }
 }
 
 function resizeFrame() {
@@ -122,10 +126,14 @@ function resizeFrame() {
 
 function notify(message) {
   if(window.webkitNotifications.checkPermission()===0) {
-    window.webkitNotifications.createNotification(
+    var notification = window.webkitNotifications.createNotification(
          null, 
          CLAN_CHAT.cache.user[message.user],
-         message.text).show();
+         message.text);
+    notification.show();
+    setTimeout(function() {
+      notification.cancel();
+    },3000);
   } else {
     window.webkitNotifications.requestPermission();
   }
@@ -272,7 +280,7 @@ Template.room.members_panel = function() {
 }
 
 Template.room.auto_scroll = function() {
-  return Session.get('auto_scroll');
+  return auto_scroll;
 }
 
 Template.room.rendered = function() {
@@ -317,7 +325,14 @@ Template.room.events({
     Session.set('current_room', null);
   },
   'click #scroll_toggle': function() {
-    Session.set('auto_scroll', (!Session.get('auto_scroll')));
+    auto_scroll = (!auto_scroll);
+    if(auto_scroll) {
+      $('a#scroll_toggle').attr('class','btn btn-inverse');
+      $('a#scroll_toggle i:first-child').attr('class','icon-refresh icon-white');
+    } else {
+      $('a#scroll_toggle').attr('class','btn');
+      $('a#scroll_toggle i:first-child').attr('class','icon-refresh');
+    }
   },
   'click #member_button': function() {
     var member_panel = $('#members_panel');
