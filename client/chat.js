@@ -380,6 +380,13 @@ Template.room.events({
       Meteor.users.update({_id:Meteor.user()._id}, {$set:{member_panel: true}})
     }
   },
+  'click #show_emotes': function() {
+    $('#modalEmotes').remove();
+    var fragment = Meteor.render(function () { 
+      return Template.show_emotes();
+    });
+    $('#room_panel').append(fragment);
+  },
   'scroll #conversation': function(event) {
     if(CLAN_CHAT.infinite && $(event.target).scrollTop() < 1000) {
       CLAN_CHAT.infinite = false;
