@@ -146,7 +146,7 @@
   <div class="message {{cycle}}">
     {{#if show_pic}}
     <div class="row-fluid message_info">
-      <div class="pic span1">
+      <div class="pic span1 {{#if online}}online{{/if}}">
         <img class="img-circle" src="{{pic}}"/> 
       </div>
       <div class="name span9">{{username}}</div>

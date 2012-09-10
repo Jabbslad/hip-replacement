@@ -46,6 +46,10 @@ Meteor.autosubscribe(function() {
 Meteor.users.find().observe({
   added: function(user) {
     CLAN_CHAT.cache.user[user._id] = user.name;
+  },
+  changed: function(new_user, index, old_user) {
+    if(old_user.online !== new_user.online)
+      status_notify(new_user.name + (new_user.online ? ' has come online' : ' has gone offline'))
   }
 });
 
@@ -63,7 +67,6 @@ CLAN_CHAT.typing = false;
 /////////////////// Session Objects //////////////
 Session.set('current_room', null);
 Session.set('offset', 50);
-Session.set('online', {});
 Session.set('typing', {});
 
 ///////////////// Global Variables ////////////////
@@ -72,23 +75,8 @@ var auto_scroll = true;
 socket = new SockJS('/presence');
 socket.onmessage = function(data) {
   var msg = JSON.parse(data.data);
-  console.log(msg)
   if(msg.type==='ooze') {
-    socket.send(JSON.stringify({type: msg.type, data: Meteor.user()._id}));
-    Meteor.call('ooze_on', function(err, online) {
-      Session.set('online', online);
-    });
-  } else if(msg.type==='status') {
-    var online = {};
-    _.extend(online,  Session.get('online'));
-    if(msg.data.status.online) {
-      online[msg.data.userId] = {online: msg.data.status.online, seen: msg.data.status.online};
-      status_notify(Meteor.users.findOne(msg.data.userId).name + ' has come online.');
-    } else {
-      delete online[msg.data.userId];
-      status_notify(Meteor.users.findOne(msg.data.userId).name + ' has gone offline.');
-    }
-    Session.set('online', online);  
+    socket.send(JSON.stringify({type: msg.type, data: Meteor.user()._id})); 
   } else if(msg.type==='typing') {
     var typing = {};
     _.extend(typing,  Session.get('typing'));
@@ -106,7 +94,10 @@ socket.onmessage = function(data) {
 var add_message = function(data, mntns) {
   var msg = $('textarea#message_text').val().trim();
   if(msg!=="") {
-    Messages.insert({room: Session.get('current_room'), user: Meteor.user()._id, text: msg, mentions: _.map(mntns, function(mntn) {  return ({'id': mntn.id, 'name': mntn.name})}), time: (new Date())});   
+    Messages.insert({room: Session.get('current_room'), user: Meteor.user()._id, text: msg, 
+      mentions: _.map(mntns, function(mntn) {  
+        return ({'id': mntn.id, 'name': mntn.name})}), time: (new Date())
+    });   
     mentions.mentionsInput('reset');
     $('textarea#message_text').focus();
   }
@@ -263,14 +254,12 @@ Template.room.participants = function() {
 }
 
 Template.participant.online = function() {
-  var online = Session.get('online');
-  return (online[this._id]) ? online[this._id].online : false
+  return this.online || false
 }
 
 Template.participant.events({
   'mouseenter a.participant': function(e) {
-    var online = Session.get('online');
-    var title = 'Last seen: ' + ((online[this._id]) ? moment(online[this._id].seen).fromNow() : 'n/a');
+    var title = 'Last seen: ' + (this.seen ? moment(this.seen).fromNow() : 'n/a');
     $(e.target).tooltip({title: title});
     $(e.target).tooltip('show');
   },
@@ -446,6 +435,11 @@ Template.message.rendered = function() {
   });
 
   message.html(text);
+}
+
+Template.message.online = function() {
+  var user = Meteor.users.findOne(this.user)
+  return this.user ? user.online : false;
 }
 
 Template.message.format_time = function() {

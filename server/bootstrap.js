@@ -150,19 +150,18 @@ Meteor.startup(function () {
 
     	socket.on('close', function() {
         	delete connections[socket.id];
-        	_.each(_.values(connections), function(connection) {
-				connection.write(JSON.stringify({type: 'status', data: {userId: socket.user_id, status: {online: false, seen: socket.seen}}}));
-			});
+        	Fiber(function(id) {
+				Meteor.users.update({_id:id}, {$set:{online: false, seen: new Date()}})
+			}).run(socket.user_id);
     	});
 
     	socket.on('data', function(data) {
     		var msg = JSON.parse(data);
     		if(msg.type==='ooze') {
-    			socket.user_id = msg.data
-    			socket.seen = new Date();
-    			_.each(_.values(connections), function(connection) {
-					connection.write(JSON.stringify({type: 'status', data: {userId: socket.user_id, status: {online: true, seen: socket.seen}}}));
-				});
+				socket.user_id = msg.data;
+				Fiber(function(id) {
+					Meteor.users.update({_id:id}, {$set:{online: true, seen: new Date()}})
+				}).run(msg.data);	
     		} else if(msg.type==='typing') {
     			_.each(_.values(connections), function(connection) {
 					connection.write(JSON.stringify({type: 'typing', data: {userId: socket.user_id, typing: msg.data.typing}}));
