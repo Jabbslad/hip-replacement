@@ -1,7 +1,11 @@
 Meteor.methods({
 	add_message: function (args) {
-		Messages.insert(args);
-		Meteor.users.update({_id:this._userId}, {$set: {seen: new Date()}});
+		Messages.insert(args, function() {
+			Meteor.users.update({_id:this._userId}, {$set: {seen: new Date()}}, function(err) {
+				if (err)
+					console.log(err)
+			});	
+		});
 	},
 	more_messages: function(room, offset) {
 		var self = this;
@@ -27,3 +31,13 @@ Meteor.methods({
 		Meteor.users.update({_id:this._userId}, {$set: {seen: new Date()}});
 	}
 });
+
+// Clear up user statuses with no socket (i.e. Zamma closing his laptop lid)
+Meteor.setInterval(function() {
+	var users = Meteor.users.find({online: true}).fetch();
+	_.each(users, function(user) {
+		if(_.isUndefined(connections[user._id])) {
+			Meteor.users.update({_id:user._id}, {$set: {online: false}});
+		}
+	});
+}, 60000);

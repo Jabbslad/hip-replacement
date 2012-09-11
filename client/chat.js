@@ -45,10 +45,12 @@ Meteor.autosubscribe(function() {
 
 Meteor.users.find().observe({
   added: function(user) {
+    if(user._id===Meteor.user()._id)
+      socket.send(JSON.stringify({type: 'ooze', data: Meteor.user()._id}));
     CLAN_CHAT.cache.user[user._id] = user;
   },
   changed: function(new_user, index, old_user) {
-    if(old_user.online !== new_user.online)
+    if(old_user.online !== new_user.online && new_user._id !== Meteor.user()._id)
       status_notify(new_user.name + (new_user.online ? ' has come online' : ' has gone offline'))
   }
 });
@@ -75,9 +77,7 @@ var auto_scroll = true;
 socket = new SockJS('/presence');
 socket.onmessage = function(data) {
   var msg = JSON.parse(data.data);
-  if(msg.type==='ooze') {
-    socket.send(JSON.stringify({type: msg.type, data: Meteor.user()._id})); 
-  } else if(msg.type==='typing') {
+  if(msg.type==='typing') {
     var typing = {};
     _.extend(typing,  Session.get('typing'));
     if(msg.data.typing) {
