@@ -32,12 +32,15 @@ Meteor.methods({
 	}
 });
 
-// Clear up user statuses with no socket (i.e. Zamma closing his laptop lid)
+// Clear up user statuses with no socket (i.e. Zamma closing his fuggin' laptop lid)
 Meteor.setInterval(function() {
 	var users = Meteor.users.find({online: true}).fetch();
 	_.each(users, function(user) {
-		if(_.isUndefined(connections[user._id])) {
+		var result = _.any(_.values(connections), function(connection) {
+			return connection.user_id === user._id;
+		});
+		if(!result) {
 			Meteor.users.update({_id:user._id}, {$set: {online: false}});
 		}
 	});
-}, 60000);
+}, 30000);
