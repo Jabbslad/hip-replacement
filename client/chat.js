@@ -432,7 +432,7 @@ Template.message.rendered = function() {
 
   Emotes.find().forEach(function(emote) {
     var regex = new RegExp(emote.code, 'g');
-    text = text.replace(regex, '<img src="img/' + emote.filename + '"/>');
+    text = text.replace(regex, '<img src="/img/' + emote.filename + '"/>');
   });
 
   message.html(text);
