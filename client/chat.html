@@ -76,7 +76,7 @@
 
 <template name="room_item">
   <li class="{{#if is_current}}active{{/if}} room_item">
-    <a href="#">{{room_name}} <span class="label label-warning">{{count}}</span></a>
+    <a href="javascript:void(0)">{{room_name}} <span class="label label-warning">{{count}}</span></a>
   </li>
 </template>
 
@@ -140,7 +140,7 @@
 </template>
 
 <template name="participant">
-  <li><a class="participant" rel="tooltip" data-placement="left" href="#">{{#if typing}}<i class="icon-pencil"></i>{{else}}<img src="/img/{{#if online}}status.png{{else}}status_offline.png{{/if}}"/>{{/if}} {{name}}</a></li>  
+  <li><a class="participant" rel="tooltip" data-placement="left" href="#">{{#if typing}}<i class="icon-pencil"></i>{{else}}<img src="/img/{{status}}"/>{{/if}} {{name}}</a></li>  
 </template>
 
 <template name="message">

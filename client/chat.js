@@ -108,8 +108,6 @@ var add_message = function(data, mntns) {
     Meteor.call('add_message', message, function(err, result) {
       if (err)
         console.log(err);
-
-      mentions_input.mentionsInput('reset');
     });
   }
 }
@@ -264,13 +262,24 @@ Template.room.participants = function() {
   return Meteor.users.find({_id: {$in: participants.members}});
 }
 
-Template.participant.online = function() {
-  return this.online || false
+function is_away(user) {
+  var now = new Date()
+  var then = new Date(user.seen);
+  if(then===NaN) {
+    return false;
+  }
+  var diff = Math.abs(now - then);
+  // idle if > 10 mins
+  return (diff / (1000 * 60)) > 10;
+}
+
+Template.participant.status = function() {
+  return this.online ? (is_away(this) ? 'status_away.png' : 'status.png') : 'status_offline.png'
 }
 
 Template.participant.events({
   'mouseenter a.participant': function(e) {
-    var title = 'Last seen: ' + (this.seen ? moment(this.seen).fromNow() : 'n/a');
+    var title = 'Last active: ' + (this.seen ? moment(this.seen).fromNow() : 'n/a');
     $(e.target).tooltip({title: title});
     $(e.target).tooltip('show');
   },
@@ -323,8 +332,6 @@ Template.room.events({
         mentions_input.mentionsInput('val', function(text){
           mentions_input.mentionsInput('getMentions', function(mntns){
             add_message(text, mntns);
-            CLAN_CHAT.typing = false;
-            socket.send(JSON.stringify({type: 'typing', data: {userId: Meteor.user()._id, typing: CLAN_CHAT.typing}}));
           });
         });
       }
@@ -492,6 +499,9 @@ Meteor.methods({
     // nowt
   },
   add_message: function(message) {
+    CLAN_CHAT.typing = false;
+    socket.send(JSON.stringify({type: 'typing', data: {userId: Meteor.user()._id, typing: CLAN_CHAT.typing}}));
+    mentions_input.mentionsInput('reset');
     Messages.insert(message);
   }
 });
