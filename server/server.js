@@ -1,6 +1,7 @@
 Meteor.methods({
 	add_message: function (args) {
 		Messages.insert(args);
+		Meteor.users.update({_id:this._userId}, {$set: {seen: new Date()}});
 	},
 	more_messages: function(room, offset) {
 		var self = this;
@@ -21,5 +22,8 @@ Meteor.methods({
 			return online[connection.user_id] = {online: true, seen: connection.seen};
 		});
 		return online;
+	},
+	ping: function() {
+		Meteor.users.update({_id:this._userId}, {$set: {seen: new Date()}});
 	}
 });

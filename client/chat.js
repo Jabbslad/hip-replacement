@@ -45,7 +45,7 @@ Meteor.autosubscribe(function() {
 
 Meteor.users.find().observe({
   added: function(user) {
-    CLAN_CHAT.cache.user[user._id] = user.name;
+    CLAN_CHAT.cache.user[user._id] = user;
   },
   changed: function(new_user, index, old_user) {
     if(old_user.online !== new_user.online)
@@ -94,12 +94,23 @@ socket.onmessage = function(data) {
 var add_message = function(data, mntns) {
   var msg = $('textarea#message_text').val().trim();
   if(msg!=="") {
-    Messages.insert({room: Session.get('current_room'), user: Meteor.user()._id, text: msg, 
-      mentions: _.map(mntns, function(mntn) {  
-        return ({'id': mntn.id, 'name': mntn.name})}), time: (new Date())
-    });   
-    mentions.mentionsInput('reset');
-    $('textarea#message_text').focus();
+    var mentions = _.map(mntns, function(mntn) {  
+        return {'id': mntn.id, 'name': mntn.name}
+    });
+    var message = {
+      text: msg,
+      mentions: mentions,
+      room: Session.get('current_room'), 
+      user: Meteor.user()._id,
+      time: new Date()
+    };
+    
+    Meteor.call('add_message', message, function(err, result) {
+      if (err)
+        console.log(err);
+
+      mentions_input.mentionsInput('reset');
+    });
   }
 }
 
@@ -111,7 +122,7 @@ function scroll() {
 
 function resizeFrame() {
     var h = $(window).height();
-    $("#conversation").css('height', (h - 300));  
+    $("#conversation").css('height', (h - 350));  
     Template.room.scroll();
 }
 
@@ -119,7 +130,7 @@ function notify(message) {
   if(window.webkitNotifications.checkPermission()===0) {
     var notification = window.webkitNotifications.createNotification(
          null, 
-         CLAN_CHAT.cache.user[message.user],
+         CLAN_CHAT.cache.user[message.user].name,
          message.text);
     notification.show();
     setTimeout(function() {
@@ -147,7 +158,7 @@ function status_notify(message) {
 
 function profile_pic(user) {
   var pic;
-  if(user.emails[0] && user.emails[0].email) {
+  if(user && user.emails[0] && user.emails[0].email) {
     pic = 'http://s.gravatar.com/avatar/' + CryptoJS.MD5(user.emails[0].email) + '?s=32'
   }
   return pic;
@@ -273,15 +284,15 @@ Template.participant.typing = function() {
   return online[this._id] === true;
 }
 
-var mentions;
+var mentions_input;
 Template.room.mentions = function() {
 
   Meteor.defer(function() {
-    mentions = $('textarea.mention').mentionsInput({
+    mentions_input = $('textarea.mention').mentionsInput({
         onDataRequest:function (mode, query, callback) {
           var data = [];
 
-          Meteor.users.find().forEach(function(user) {
+          _.each(CLAN_CHAT.cache.user, function(user) {
             data.push({id: user._id, name: user.name, avatar: profile_pic(user), type: 'contact'}); 
           });
 
@@ -292,18 +303,8 @@ Template.room.mentions = function() {
   });
 }
 
-Template.room.resize = function() {
-  Meteor.defer(function() {
-    resizeFrame(); 
-  });
-}
-
 Template.room.members_panel = function() {
-  if(Meteor.users.findOne(Meteor.user()._id).member_panel) {
-    return true;
-  } else {
-    return false;
-  }
+  return Meteor.users.findOne(Meteor.user()._id).member_panel
 }
 
 Template.room.auto_scroll = function() {
@@ -311,6 +312,7 @@ Template.room.auto_scroll = function() {
 }
 
 Template.room.rendered = function() {
+  resizeFrame();
   scroll();
 }
 
@@ -318,8 +320,8 @@ Template.room.events({
   'keydown textarea': function(e) {
     if(e.keyCode==13 && !e.shiftKey) {
       if(!e.defaultPrevented) {
-        mentions.mentionsInput('val', function(text){
-          mentions.mentionsInput('getMentions', function(mntns){
+        mentions_input.mentionsInput('val', function(text){
+          mentions_input.mentionsInput('getMentions', function(mntns){
             add_message(text, mntns);
             CLAN_CHAT.typing = false;
             socket.send(JSON.stringify({type: 'typing', data: {userId: Meteor.user()._id, typing: CLAN_CHAT.typing}}));
@@ -349,7 +351,7 @@ Template.room.events({
   },
   'click #leave_room': function() {
     Participants.update({room_id : Session.get('current_room')}, {$pull : { members : Meteor.user()._id}});
-    Session.set('current_room', null);
+    Router.setRoom(null);
   },
   'click #scroll_toggle': function() {
     auto_scroll = (!auto_scroll);
@@ -393,7 +395,7 @@ Template.room.events({
 ///////////////// Room Item //////////////////////////
 Template.room_item.is_current = function() {
   if(!Session.get('current_room')) {
-    Session.set('current_room', this.room_id);
+    Router.setRoom(this.room_id);
   }
   return (Session.get('current_room')===this.room_id);  
 }
@@ -409,8 +411,7 @@ Template.room_item.room_name = function() {
 
 Template.room_item.events = {
   'click': function() {
-    Session.set('current_room', this.room_id);
-    CLAN_CHAT.last_message_poster = null;
+    Router.setRoom(this.room_id);
   }
 }
 
@@ -453,26 +454,9 @@ Template.message.format_time = function() {
   return (((hours > 9) ? hours : '0' + hours) + ':' + ((mins > 9) ? mins : '0' + mins));
 }
 
-Template.message.update_last_poster = function() {
-  CLAN_CHAT.last_message_poster = this.user;
-}
-
-Template.message.show_pic = function() {
-  return true;
-}
-
-Template.message.format = function(message) {
-    var html = message.trim();
-    Emotes.find().forEach(function(emote) {
-      var regex = new RegExp(emote.code, 'g');
-      //html = html.replace(regex, '<img src="img/' + emote.filename + '"/>');
-    });
-    return html;
-}
-
 Template.message.username = function() {
     var user = CLAN_CHAT.cache.user[this.user];
-    return user;
+    return user.name;
 }
 
 Template.message.pic = function() {
@@ -485,9 +469,39 @@ Template.mention.pic = function() {
   return profile_pic(user)  
 }
 
+var ChannelRouter = Backbone.Router.extend({
+  routes: {
+    'room/:channel_id': 'main'
+  },
+  main: function(channel_id) {
+    CLAN_CHAT.notifications = false;
+    Session.set('current_room', channel_id);
+    CLAN_CHAT.last_message_poster = null;
+  },
+  setRoom: function(channel_id) {
+    this.navigate('room/' + channel_id, true);
+    Meteor.call('ping', function(err) {
+      if (err)
+        console.log('failed to ping');
+    });
+  }
+});
+
+Meteor.methods({
+  ping: function() {
+    // nowt
+  },
+  add_message: function(message) {
+    Messages.insert(message);
+  }
+});
+
+Router = new ChannelRouter;
+
 Meteor.startup (function() {
-  jQuery.event.add(window, "load", Template.room.resize);
-  jQuery.event.add(window, "resize", Template.room.resize);
+  Backbone.history.start({pushState: true});
+
+  jQuery.event.add(window, "resize", resizeFrame);
 
   Tinycon.setOptions({
     width: 7,

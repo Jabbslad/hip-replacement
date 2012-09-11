@@ -1,6 +1,6 @@
 <head>
   <title>Hip Replacement</title>
-  <link rel="icon" href="favicon.ico">
+  <link rel="icon" href="/favicon.ico">
 </head>
 
 <body>
@@ -128,39 +128,34 @@
 
     <div class="row-fluid">
       <div class="controls well {{#if members_panel}}span8{{else}}span11{{/if}} offset1">
-        <textarea id="message_text" class="span12 mention"/>
+        <div class="span12">
+          <textarea id="message_text" class="mention"/>
+        </div>
       </div>
     </div>
     {{mentions}}
   {{else}}
     Please select a room!
   {{/if}}
-  {{resize}}
 </template>
 
 <template name="participant">
-  <li><a class="participant" rel="tooltip" data-placement="left" href="#">{{#if typing}}<i class="icon-pencil"></i>{{else}}<img src="img/{{#if online}}status.png{{else}}status_offline.png{{/if}}"/>{{/if}} {{name}}</a></li>  
+  <li><a class="participant" rel="tooltip" data-placement="left" href="#">{{#if typing}}<i class="icon-pencil"></i>{{else}}<img src="/img/{{#if online}}status.png{{else}}status_offline.png{{/if}}"/>{{/if}} {{name}}</a></li>  
 </template>
 
 <template name="message">
   <div class="message {{cycle}}">
-    {{#if show_pic}}
     <div class="row-fluid message_info">
-      <div class="pic span1 {{#if online}}online{{/if}}">
+      <div class="pic span1">
         <img class="img-circle" src="{{pic}}"/> 
       </div>
       <div class="name span9">{{username}}</div>
       <div class="span2"><div class="time pull-right">{{format_time}}</div></div>
     </div>
-    {{/if}}
 
     <div class="row-fluid message_row">
-      <div class="span9 offset1 message_text">{{{format text}}}</div>
-      {{#unless show_pic}}
-      <div class="span2"><div class="time pull-right">{{format_time}}</div></div>
-      {{/unless}}
+      <div class="span9 offset1 message_text">{{{text}}}</div>
     </div>
-    {{update_last_poster}}
   </div>
 </template>
 
