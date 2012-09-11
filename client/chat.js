@@ -137,6 +137,7 @@ function notify(message) {
   } else {
     window.webkitNotifications.requestPermission();
   }
+  pop.play();
 }
 
 function status_notify(message) {
@@ -507,6 +508,10 @@ Meteor.methods({
 });
 
 Router = new ChannelRouter;
+
+var pop = new buzz.sound( "/snd/pop", {
+  formats: ["mp3", "wav"]
+});
 
 Meteor.startup (function() {
   Backbone.history.start({pushState: true});
