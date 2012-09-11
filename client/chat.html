@@ -222,7 +222,10 @@
           <h3 id="myModalLabel">Emotes</h3>
         </div>
         <div class="modal-body">
-          <label>Emote</label>
+          {{#each emotes}}
+            <img src="img/{{this.filename}}"/>
+            <label>{{emote_code this.code}}</label>
+          {{/each}}
         </div>
         <div class="modal-footer">
           <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
