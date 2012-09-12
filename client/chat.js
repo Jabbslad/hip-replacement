@@ -155,10 +155,10 @@ function status_notify(message) {
   }
 }
 
-function profile_pic(user) {
+function profile_pic(user, size) {
   var pic;
   if(user && user.emails[0] && user.emails[0].email) {
-    pic = 'http://s.gravatar.com/avatar/' + CryptoJS.MD5(user.emails[0].email) + '?s=32'
+    pic = 'http://s.gravatar.com/avatar/' + CryptoJS.MD5(user.emails[0].email) + '?s=' + (size?size:'32');
   }
   return pic;
 }
@@ -309,7 +309,8 @@ var mentions_input;
 Template.room.mentions = function() {
 
   Meteor.defer(function() {
-    mentions_input = $('textarea.mention').mentionsInput({
+      if(!mentions_input) {
+      mentions_input = $('textarea.mention').mentionsInput({
         onDataRequest:function (mode, query, callback) {
           var data = [];
 
@@ -321,6 +322,7 @@ Template.room.mentions = function() {
           callback.call(this, data);
         }
       });
+      }
   });
 }
 
@@ -470,14 +472,7 @@ Template.message.online = function() {
 }
 
 Template.message.format_time = function() {
-  var date = new Date();
-  if(_.isString(this.time)) {
-    date = new Date(this.time);
-  }
-  var hours = date.getHours();
-  var mins = date.getMinutes()
-  var time = ((hours > 9) ? hours : '0' + hours) + ':' + ((mins > 9) ? mins : '0' + mins)
-  return (((hours > 9) ? hours : '0' + hours) + ':' + ((mins > 9) ? mins : '0' + mins));
+  return moment(this.time).fromNow();
 }
 
 Template.message.username = function() {
@@ -487,7 +482,7 @@ Template.message.username = function() {
 
 Template.message.pic = function() {
     var user = Meteor.users.findOne(this.user)
-    return profile_pic(user);
+    return profile_pic(user, 48);
 }
 
 Template.mention.pic = function() {
@@ -520,8 +515,8 @@ Meteor.methods({
   add_message: function(message) {
     CLAN_CHAT.typing = false;
     socket.send(JSON.stringify({type: 'typing', data: {userId: Meteor.user()._id, typing: CLAN_CHAT.typing}}));
-    mentions_input.mentionsInput('reset');
     Messages.insert(message);
+    mentions_input.mentionsInput('reset');
   }
 });
 

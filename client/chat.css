@@ -8,7 +8,7 @@
 
 .time {
 	font-size: small;
-	opacity: 0.5;
+	opacity: 0.3;
 }
 
 .controls {
@@ -21,7 +21,14 @@
 }
 
 .pic {
-	text-align: right;
+	margin-top: 3px;
+	padding-left: 3px;
+}
+
+.pic img {
+	box-shadow:
+		0 0 0 1px hsl(100, 100%, 100%),
+        0 0 0 2px hsl(0, 0%, 80%)
 }
 
 .cog {
@@ -31,8 +38,7 @@
 .message_text {
 	white-space: pre-line;
 	word-wrap: break-word;
-	font-size: small;
-	padding-bottom: 10px;
+	padding-bottom: 5px;
 }
 
 .members {
