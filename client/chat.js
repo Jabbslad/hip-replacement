@@ -240,6 +240,17 @@ Template.create_room.events = {
   }
 }
 
+/////////////// Emotes ///////////////////////
+
+Template.show_emotes.emotes = function() {
+  return Emotes.find();
+}
+
+Template.show_emotes.emote_code = function(code) {
+  var emoteCode = code.replace(new RegExp(/\\/g), '');
+  return emoteCode;
+}
+
 ///////////////// Room //////////////////////////
 Template.room.current_room = function () {
   var room = Rooms.findOne({_id: Session.get('current_room')});
@@ -380,6 +391,13 @@ Template.room.events({
     } else {
       Meteor.users.update({_id:Meteor.user()._id}, {$set:{member_panel: true}})
     }
+  },
+  'click #show_emotes': function() {
+    $('#modalEmotes').remove();
+    var fragment = Meteor.render(function () { 
+      return Template.show_emotes();
+    });
+    $('#room_panel').append(fragment);
   },
   'scroll #conversation': function(event) {
     if(CLAN_CHAT.infinite && $(event.target).scrollTop() < 1000) {
