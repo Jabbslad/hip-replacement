@@ -125,14 +125,15 @@
         </div>
       </div>
     </div>
-
-    <div class="row-fluid">
-      <div class="controls well {{#if members_panel}}span8{{else}}span11{{/if}} offset1">
-        <div class="span12">
-          <textarea id="message_text" class="mention"/>
+    {{#constant}}
+      <div class="row-fluid">
+        <div class="controls well {{#if members_panel}}span8{{else}}span11{{/if}} offset1">
+          <div class="span12">
+            <textarea id="message_text" class="mention"/>
+          </div>
         </div>
       </div>
-    </div>
+    {{/constant}}
     {{mentions}}
   {{else}}
     Please select a room!

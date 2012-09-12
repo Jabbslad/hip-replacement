@@ -298,7 +298,8 @@ var mentions_input;
 Template.room.mentions = function() {
 
   Meteor.defer(function() {
-    mentions_input = $('textarea.mention').mentionsInput({
+      if(!mentions_input) {
+      mentions_input = $('textarea.mention').mentionsInput({
         onDataRequest:function (mode, query, callback) {
           var data = [];
 
@@ -310,6 +311,7 @@ Template.room.mentions = function() {
           callback.call(this, data);
         }
       });
+      }
   });
 }
 
@@ -502,8 +504,8 @@ Meteor.methods({
   add_message: function(message) {
     CLAN_CHAT.typing = false;
     socket.send(JSON.stringify({type: 'typing', data: {userId: Meteor.user()._id, typing: CLAN_CHAT.typing}}));
-    mentions_input.mentionsInput('reset');
     Messages.insert(message);
+    mentions_input.mentionsInput('reset');
   }
 });
 
