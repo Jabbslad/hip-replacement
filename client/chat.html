@@ -9,7 +9,15 @@
       <div class="navbar-inner">
         <a class="brand" href="#">Clanchat</a>
         <ul class="nav pull-right">
-          <li><a href="#">{{#if currentUser}}{{> loginButtons}}{{/if}}</a></li>
+            <li><a href="#">
+              {{#if currentUser}}
+                <div class="row-fluid">
+                  <div class="span12">
+                    {{> loginButtons}}
+                  </div>
+                </div>
+              {{/if}}
+            </a></li>
         </ul>
       </div>
     </div>
