@@ -55,7 +55,7 @@ Meteor.startup(function () {
 	Emotes.insert({code: '\\(farnsworth\\)', filename: 'farnsworth.png'});
 	Emotes.insert({code: '\\(:Q\\)', filename: 'footinmouth.png'});
 	Emotes.insert({code: '\\(alone\\)', filename: 'foreveralone.png'});
-	Emotes.insert({code: '\\(freddie\\)', filename: 'freddie.png'});
+	//Emotes.insert({code: '\\(freddie\\)', filename: 'freddie.png'});
 	Emotes.insert({code: '\\]:\\(', filename: 'frown.png'});
 	Emotes.insert({code: '\\(fry\\)', filename: 'fry.png'});
 	Emotes.insert({code: '\\(fuckyeah\\)', filename: 'fuckyeah.png'});
@@ -83,8 +83,8 @@ Meteor.startup(function () {
 	Emotes.insert({code: '\\$\\)', filename: 'moneymouth.png'});
 	Emotes.insert({code: '\\(ninja\\)', filename: 'ninja.png'});
 	Emotes.insert({code: '\\(notbad\\)', filename: 'notbad.png'});
-	Emotes.insert({code: '\\(nothingtodo\\)', filename: 'nothingtodohere.p'});
-	Emotes.insert({code: '\\((?:github|octocat)\\)', filename: 'octocat.png" width="18px" height="18px'});
+	Emotes.insert({code: '\\(nothingtodo\\)', filename: 'nothingtodohere.png'});
+	//Emotes.insert({code: '\\(github\\)', filename: 'octocat.png" width="18px" height="18px'});
 	Emotes.insert({code: '\\(ohcrap\\)', filename: 'ohcrap.png'});
 	Emotes.insert({code: '\\(ohgodwhy\\)', filename: 'ohgodwhy.jpeg'});
 	Emotes.insert({code: '\\(okay\\)', filename: 'okay.png'});
@@ -110,7 +110,7 @@ Meteor.startup(function () {
 	Emotes.insert({code: ':Z', filename: 'sealed.png'});
 	Emotes.insert({code: '\\(seomoz\\)', filename: 'seomoz.png'});
 	Emotes.insert({code: '\\(shamrock\\)', filename: 'shamrock.png'});
-	Emotes.insert({code: '\\(skyrim\\)', filename: 'skyrim.png'});
+	//Emotes.insert({code: '\\(skyrim\\)', filename: 'skyrim.png'});
 	Emotes.insert({code: '\\(:\\/\\)', filename: 'slant.png'});
 	Emotes.insert({code: ':\\)', filename: 'smile.png'});
 	Emotes.insert({code: '\\(stare\\)', filename: 'stare.png'});
@@ -150,19 +150,18 @@ Meteor.startup(function () {
 
     	socket.on('close', function() {
         	delete connections[socket.id];
-        	_.each(_.values(connections), function(connection) {
-				connection.write(JSON.stringify({type: 'status', data: {userId: socket.user_id, status: {online: false, seen: socket.seen}}}));
-			});
+        	Fiber(function(id) {
+				Meteor.users.update({_id:id}, {$set:{online: false, seen: new Date()}})
+			}).run(socket.user_id);
     	});
 
     	socket.on('data', function(data) {
     		var msg = JSON.parse(data);
     		if(msg.type==='ooze') {
-    			socket.user_id = msg.data
-    			socket.seen = new Date();
-    			_.each(_.values(connections), function(connection) {
-					connection.write(JSON.stringify({type: 'status', data: {userId: socket.user_id, status: {online: true, seen: socket.seen}}}));
-				});
+				socket.user_id = msg.data;
+				Fiber(function(id) {
+					Meteor.users.update({_id:id}, {$set:{online: true, seen: new Date()}})
+				}).run(msg.data);	
     		} else if(msg.type==='typing') {
     			_.each(_.values(connections), function(connection) {
 					connection.write(JSON.stringify({type: 'typing', data: {userId: socket.user_id, typing: msg.data.typing}}));

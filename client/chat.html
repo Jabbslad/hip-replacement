@@ -1,6 +1,6 @@
 <head>
   <title>Hip Replacement</title>
-  <link rel="icon" href="favicon.ico">
+  <link rel="icon" href="/favicon.ico">
 </head>
 
 <body>
@@ -76,7 +76,7 @@
 
 <template name="room_item">
   <li class="{{#if is_current}}active{{/if}} room_item">
-    <a href="#">{{room_name}} <span class="label label-warning">{{count}}</span></a>
+    <a href="javascript:void(0)">{{room_name}} <span class="label label-warning">{{count}}</span></a>
   </li>
 </template>
 
@@ -142,16 +142,14 @@
   {{else}}
     Please select a room!
   {{/if}}
-  {{resize}}
 </template>
 
 <template name="participant">
-  <li><a class="participant" rel="tooltip" data-placement="left" href="#">{{#if typing}}<i class="icon-pencil"></i>{{else}}<img src="img/{{#if online}}status.png{{else}}status_offline.png{{/if}}"/>{{/if}} {{name}}</a></li>  
+  <li><a class="participant" rel="tooltip" data-placement="left" href="#">{{#if typing}}<i class="icon-pencil"></i>{{else}}<img src="/img/{{status}}"/>{{/if}} {{name}}</a></li>  
 </template>
 
 <template name="message">
   <div class="message {{cycle}}">
-    {{#if show_pic}}
     <div class="row-fluid message_info">
       <div class="pic span1">
         <img class="img-circle" src="{{pic}}"/> 
@@ -159,15 +157,10 @@
       <div class="name span9">{{username}}</div>
       <div class="span2"><div class="time pull-right">{{format_time}}</div></div>
     </div>
-    {{/if}}
 
     <div class="row-fluid message_row">
-      <div class="span9 offset1 message_text">{{{format text}}}</div>
-      {{#unless show_pic}}
-      <div class="span2"><div class="time pull-right">{{format_time}}</div></div>
-      {{/unless}}
+      <div class="span9 offset1 message_text">{{{text}}}</div>
     </div>
-    {{update_last_poster}}
   </div>
 </template>
 
@@ -222,10 +215,13 @@
           <h3 id="myModalLabel">Emotes</h3>
         </div>
         <div class="modal-body">
-          {{#each emotes}}
-            <img src="img/{{this.filename}}"/>
-            <label>{{emote_code this.code}}</label>
-          {{/each}}
+          <div class="row">
+            {{#each emotes}}
+              <div class="span2" align="center">
+                <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
+              </div>
+            {{/each}}
+          </div>
         </div>
         <div class="modal-footer">
           <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
