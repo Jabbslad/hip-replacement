@@ -133,21 +133,21 @@
         </div>
       </div>
     </div>
-
-    {{#constant}}
-      <div class="row-fluid">
-        <div class="controls well {{#if members_panel}}span9{{else}}span12{{/if}}">
-          <div class="span11">
-            <textarea id="message_text" class="mention"/>
-          </div>
-          <div class="span1">
-            <a id="show_emotes" class="btn" tabindex="-1" href="#modalEmotes" data-toggle="modal">
-              <i class="icon-book"></i>
-            </a>
-          </div> 
+    
+    <div class="row-fluid">
+      <div class="controls well {{#if members_panel}}span9{{else}}span12{{/if}}">
+        {{#constant}}
+        <div class="span11">
+          <textarea id="message_text" class="mention"/>
         </div>
+        <div class="span1">
+          <a id="show_emotes" class="btn" tabindex="-1" href="#modalEmotes" data-toggle="modal">
+            <i class="icon-book"></i>
+          </a>
+        </div>
+        {{/constant}} 
       </div>
-    {{/constant}}
+    </div>
     {{mentions}}
   {{else}}
     Please select a room!
