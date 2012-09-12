@@ -1,7 +1,8 @@
 Meteor.methods({
 	add_message: function (args) {
+		var self = this;
 		Messages.insert(args, function() {
-			Meteor.users.update({_id:this._userId}, {$set: {seen: new Date()}}, function(err) {
+			Meteor.users.update({_id:self._userId}, {$set: {seen: new Date()}}, function(err) {
 				if (err)
 					console.log(err)
 			});	
