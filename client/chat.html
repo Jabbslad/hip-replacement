@@ -148,14 +148,16 @@
   <div class="message {{cycle}}">
     <div class="row-fluid message_info">
       <div class="pic span1">
-        <img class="img-circle" src="{{pic}}"/> 
+        <img class="img-rounded" src="{{pic}}"/> 
       </div>
-      <div class="name span9">{{username}}</div>
-      <div class="span2"><div class="time pull-right">{{format_time}}</div></div>
-    </div>
-
-    <div class="row-fluid message_row">
-      <div class="span9 offset1 message_text">{{{text}}}</div>
+      <div class="hmm span11">
+        <div class="row-fluid">
+          <div class="span12 message_text">{{{text}}}</div>
+        </div>
+        <div class="row-fluid">
+          <div class="span12 time">{{username}} <i class="icon-time"></i> {{format_time}} </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
