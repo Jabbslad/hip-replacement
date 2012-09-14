@@ -242,8 +242,13 @@ Template.create_room.events = {
 
 /////////////// Emotes ///////////////////////
 
-Template.show_emotes.emotes = function() {
-  return Emotes.find();
+//Template.show_emotes.emotes = function() {
+//  return Emotes.find();
+//}
+
+Template.show_emotes.emotes = function(start, end) {
+  var emotes = Emotes.find({},{sort: {code: 1}}).fetch();
+  return emotes.slice(start,end);
 }
 
 Template.show_emotes.emote_code = function(code) {
