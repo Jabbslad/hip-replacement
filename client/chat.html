@@ -221,22 +221,94 @@
 </template>
 
 <template name="show_emotes">
-      <div class="modal" id="modalEmotes" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-          <h3 id="myModalLabel">Emotes</h3>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            {{#each emotes}}
-              <div class="span2" align="center">
-                <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
-              </div>
+    <div class="modal" id="modalEmotes" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">Emotes</h3>
+      </div>
+      <div class="modal-body">
+        <div class="row offset2">
+          <div class="row" align="center">
+            {{#each emotes 0 10}}
+            <div class="span1" align="center">
+              <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
+            </div>
+            {{/each}}
+          </div>
+          <div class="row" align="center">
+            {{#each emotes 10 20}}
+            <div class="span1" align="center">
+              <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
+            </div>
+            {{/each}}
+          </div>
+          <div class="row" align="center">
+            {{#each emotes 20 30}}
+            <div class="span1" align="center">
+              <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
+            </div>
+            {{/each}}
+          </div>
+          <div class="row" align="center">
+            {{#each emotes 30 40}}
+            <div class="span1" align="center">
+              <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
+            </div>
+            {{/each}}
+          </div>
+          <div class="row" align="center">
+            {{#each emotes 40 50}}
+            <div class="span1" align="center">
+              <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
+            </div>
+            {{/each}}
+          </div>
+          <div class="row" align="center">
+            {{#each emotes 50 60}}
+            <div class="span1" align="center">
+              <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
+            </div>
+            {{/each}}
+          </div>
+          <div class="row" align="center">
+            {{#each emotes 70 80}}
+            <div class="span1" align="center">
+              <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
+            </div>
+            {{/each}}
+          </div>
+          <div class="row" align="center">
+            {{#each emotes 80 90}}
+            <div class="span1" align="center">
+              <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
+            </div>
+            {{/each}}
+          </div>
+          <div class="row" align="center">
+            {{#each emotes 90 100}}
+            <div class="span1" align="center">
+              <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
+            </div>
+            {{/each}}
+          </div>
+          <div class="row" align="center">
+            {{#each emotes 100 110}}
+            <div class="span1" align="center">
+              <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
+            </div>
+            {{/each}}
+          </div>
+          <div class="row" align="center">
+            {{#each emotes 110 120}}
+            <div class="span1" align="center">
+              <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
+            </div>
             {{/each}}
           </div>
         </div>
-        <div class="modal-footer">
-          <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-        </div>
       </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+      </div>
+    </div>
 </template>

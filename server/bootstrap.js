@@ -55,7 +55,6 @@ Meteor.startup(function () {
 	Emotes.insert({code: '\\(farnsworth\\)', filename: 'farnsworth.png'});
 	Emotes.insert({code: '\\(:Q\\)', filename: 'footinmouth.png'});
 	Emotes.insert({code: '\\(alone\\)', filename: 'foreveralone.png'});
-	//Emotes.insert({code: '\\(freddie\\)', filename: 'freddie.png'});
 	Emotes.insert({code: '\\]:\\(', filename: 'frown.png'});
 	Emotes.insert({code: '\\(fry\\)', filename: 'fry.png'});
 	Emotes.insert({code: '\\(fuckyeah\\)', filename: 'fuckyeah.png'});
@@ -72,7 +71,7 @@ Meteor.startup(function () {
 	Emotes.insert({code: '\\(lied\\)', filename: 'ilied.png'});
 	Emotes.insert({code: '\\(indeed\\)', filename: 'indeed.png'});
 	Emotes.insert({code: 'o:\\)', filename: 'innocent.png'});
-	Emotes.insert({code: '\\(cham\\)', filename: 'jackie.png'});
+	Emotes.insert({code: '\\(jackiechan\\)', filename: 'jackie.png'});
 	Emotes.insert({code: '\\(jobs\\)', filename: 'jobs.png'});
 	Emotes.insert({code: '\\(kermit\\)', filename: 'kermit.gif'});
 	Emotes.insert({code: '\\(kiss\\)', filename: 'kiss.png'});
@@ -84,7 +83,6 @@ Meteor.startup(function () {
 	Emotes.insert({code: '\\(ninja\\)', filename: 'ninja.png'});
 	Emotes.insert({code: '\\(notbad\\)', filename: 'notbad.png'});
 	Emotes.insert({code: '\\(nothingtodo\\)', filename: 'nothingtodohere.png'});
-	//Emotes.insert({code: '\\(github\\)', filename: 'octocat.png" width="18px" height="18px'});
 	Emotes.insert({code: '\\(ohcrap\\)', filename: 'ohcrap.png'});
 	Emotes.insert({code: '\\(ohgodwhy\\)', filename: 'ohgodwhy.jpeg'});
 	Emotes.insert({code: '\\(okay\\)', filename: 'okay.png'});
@@ -95,7 +93,7 @@ Meteor.startup(function () {
 	Emotes.insert({code: '\\(pingpong\\)', filename: 'pingpong.png'});
 	Emotes.insert({code: 'P\\)', filename: 'pirate.gif'});
 	Emotes.insert({code: '\\(pokerface\\)', filename: 'pokerface.png'});
-	Emotes.insert({code: '\\(poo\\)|\\(turd\\)', filename: 'poo.png'});
+	Emotes.insert({code: '\\(poo\\)', filename: 'poo.png'});
 	Emotes.insert({code: '\\(gift\\)', filename: 'present.png'});
 	Emotes.insert({code: '\\(pumpkin\\)', filename: 'pumpkin.png'});
 	Emotes.insert({code: '\\(rage\\)', filename: 'rageguy.png'});
@@ -110,11 +108,9 @@ Meteor.startup(function () {
 	Emotes.insert({code: ':Z', filename: 'sealed.png'});
 	Emotes.insert({code: '\\(seomoz\\)', filename: 'seomoz.png'});
 	Emotes.insert({code: '\\(shamrock\\)', filename: 'shamrock.png'});
-	//Emotes.insert({code: '\\(skyrim\\)', filename: 'skyrim.png'});
 	Emotes.insert({code: '\\(:\\/\\)', filename: 'slant.png'});
 	Emotes.insert({code: ':\\)', filename: 'smile.png'});
 	Emotes.insert({code: '\\(stare\\)', filename: 'stare.png'});
-	Emotes.insert({code: '\\(status\\)', filename: 'status.png'});
 	Emotes.insert({code: ':\\|', filename: 'straightface.png'});
 	Emotes.insert({code: '\\(sweet\\)', filename: 'sweetjesus.png'});
 	Emotes.insert({code: '\\(tea\\)', filename: 'tea.png'});
