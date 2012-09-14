@@ -93,7 +93,7 @@
     <div class="room_container span12">
       <div class="row-fluid">
         <div class="span12 well well-small">
-          <div class="span10"><strong><a href="#" class="btn btn-link">{{current_room.name}}</a></strong></div>
+          <div class="span10"><strong><a href="#" class="btn btn-link">{{current_room.name}}</a></strong> {{#if current_room.topic}}<span class="topic"><i class="icon-bullhorn"></i> {{current_room.topic}}</span>{{/if}}</div>
           <div class="span2">
             <div class="btn-group pull-right">
               <a id="scroll_toggle" class="btn btn-inverse" data-toggle="button" href="#">
@@ -114,7 +114,7 @@
         </div>
       </div>
 
-      <div class="row-fluid">
+      <div class="row-fluid room">
         <div id="conversation" class="{{#if members_panel}}span9{{else}}span12{{/if}}">
           {{#each messages}}
             {{>message}}
