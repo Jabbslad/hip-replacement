@@ -83,5 +83,16 @@
 
 .topic {
 	font-size: small;
-	opacity: 0.6;
+}
+
+.emote {
+	margin: 5px;
+	cursor: pointer;
+}
+
+.smile-icon {
+	display: block;
+	background-image: url('/img/smile.png');
+	height: 18px;
+	width: 18px;
 }

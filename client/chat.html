@@ -141,8 +141,8 @@
           <textarea id="message_text" class="mention"/>
         </div>
         <div class="span1">
-          <a id="show_emotes" class="btn" tabindex="-1" href="#modalEmotes" data-toggle="modal">
-            <img src="/img/smile.png"/>
+          <a id="show_emotes" class="btn btn-small" tabindex="-1" href="#modalEmotes" data-toggle="modal">
+            <i class="smile-icon"></i>
           </a>
         </div>
         {{/constant}} 
@@ -227,88 +227,15 @@
         <h3 id="myModalLabel">Emotes</h3>
       </div>
       <div class="modal-body">
-        <div class="row offset2">
-          <div class="row" align="center">
-            {{#each emotes 0 10}}
-            <div class="span1" align="center">
-              <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
-            </div>
-            {{/each}}
-          </div>
-          <div class="row" align="center">
-            {{#each emotes 10 20}}
-            <div class="span1" align="center">
-              <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
-            </div>
-            {{/each}}
-          </div>
-          <div class="row" align="center">
-            {{#each emotes 20 30}}
-            <div class="span1" align="center">
-              <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
-            </div>
-            {{/each}}
-          </div>
-          <div class="row" align="center">
-            {{#each emotes 30 40}}
-            <div class="span1" align="center">
-              <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
-            </div>
-            {{/each}}
-          </div>
-          <div class="row" align="center">
-            {{#each emotes 40 50}}
-            <div class="span1" align="center">
-              <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
-            </div>
-            {{/each}}
-          </div>
-          <div class="row" align="center">
-            {{#each emotes 50 60}}
-            <div class="span1" align="center">
-              <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
-            </div>
-            {{/each}}
-          </div>
-          <div class="row" align="center">
-            {{#each emotes 70 80}}
-            <div class="span1" align="center">
-              <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
-            </div>
-            {{/each}}
-          </div>
-          <div class="row" align="center">
-            {{#each emotes 80 90}}
-            <div class="span1" align="center">
-              <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
-            </div>
-            {{/each}}
-          </div>
-          <div class="row" align="center">
-            {{#each emotes 90 100}}
-            <div class="span1" align="center">
-              <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
-            </div>
-            {{/each}}
-          </div>
-          <div class="row" align="center">
-            {{#each emotes 100 110}}
-            <div class="span1" align="center">
-              <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
-            </div>
-            {{/each}}
-          </div>
-          <div class="row" align="center">
-            {{#each emotes 110 120}}
-            <div class="span1" align="center">
-              <img title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
-            </div>
+        <div class="row-fluid">
+          <div class="span12">
+            {{#each emotes}}
+              <img class="emote" title="{{emote_code this.code}}" src="/img/{{this.filename}}" width="18px" height="18px"/>
             {{/each}}
           </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
       </div>
     </div>
 </template>

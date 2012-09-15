@@ -490,10 +490,21 @@ Template.message.pic = function() {
     return profile_pic(user, 48);
 }
 
+///////////////// Mention ///////////////////////////////
 Template.mention.pic = function() {
   var user = Meteor.users.findOne(this.mention.id)
   return profile_pic(user)  
 }
+
+///////////////// Show_Emotes ///////////////////////////
+Template.show_emotes.events({
+  'click .emote': function(e) {
+    var text = $('textarea#message_text').val();
+    // XXX - Change so is appended at caret position
+    $('textarea#message_text').val(text + Template.show_emotes.emote_code(this.code));
+    $('#modalEmotes').modal('hide');
+  }
+});
 
 var ChannelRouter = Backbone.Router.extend({
   routes: {
